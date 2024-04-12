@@ -1,6 +1,7 @@
 <script setup>
 import { supabase } from "../utils/supabase";
 import { ref, onMounted } from "vue";
+import slider from "./components/GroupSlider.vue";
 const ingredients = ref([]);
 
 async function getingredients() {
@@ -15,9 +16,10 @@ onMounted(() => {
 </script>
 
 <template>
-  <ul>
+  <slider />
+  <!--   <ul>
     <li v-for="ingredient in ingredients" :key="ingredient.id">
       {{ ingredient.name }}
     </li>
-  </ul>
+  </ul> -->
 </template>
