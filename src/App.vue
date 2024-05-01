@@ -16,6 +16,10 @@ onMounted(() => {
 </script>
 
 <template>
+  <nav>
+    <RouterLink to="/">Home</RouterLink>
+    <RouterLink to="login">Login Page</RouterLink>
+  </nav>
   <button id="book">📖</button>
 
   <div class="ingredients">
