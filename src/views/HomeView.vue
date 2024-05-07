@@ -1,4 +1,23 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { supabase } from "../../utils/supabase";
+import { ref, onMounted, type Ref } from "vue";
+type Ingredient = {
+  name: string;
+  image: string;
+  type: string;
+};
+
+const ingredients: Ref<Ingredient[]> = ref([]);
+async function getingredients() {
+  const response = await supabase.from("ingredients").select();
+  console.log(response);
+  ingredients.value = response.data as Ingredient[];
+}
+
+onMounted(async () => {
+  await getingredients();
+});
+</script>
 
 <template>
   <main>
@@ -13,53 +32,9 @@
         <button id="dairy">Water</button>
       </div>
       <div class="scrollable">
-        <div class="circle">
-          <h2>once</h2>
-          <h2>image</h2>
-        </div>
-        <div class="circle">
-          <h2>twice</h2>
-          <h2>image</h2>
-        </div>
-        <div class="circle">
-          <h2>thrice</h2>
-          <h2>image</h2>
-        </div>
-        <div class="circle">
-          <h2>fourice</h2>
-          <h2>image</h2>
-        </div>
-        <div class="circle">
-          <h2>fivrice</h2>
-          <h2>image</h2>
-        </div>
-        <div class="circle">
-          <h2>sixrice</h2>
-          <h2>image</h2>
-        </div>
-        <div class="circle">
-          <h2>once</h2>
-          <h2>image</h2>
-        </div>
-        <div class="circle">
-          <h2>twice</h2>
-          <h2>image</h2>
-        </div>
-        <div class="circle">
-          <h2>thrice</h2>
-          <h2>image</h2>
-        </div>
-        <div class="circle">
-          <h2>fourice</h2>
-          <h2>image</h2>
-        </div>
-        <div class="circle">
-          <h2>fivrice</h2>
-          <h2>image</h2>
-        </div>
-        <div class="circle">
-          <h2>sixrice</h2>
-          <h2>image</h2>
+        <div class="circle" v-for="ing in ingredients">
+          {{ ing.name }}
+          {{ ing.type }}
         </div>
       </div>
     </div>
