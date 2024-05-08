@@ -21,7 +21,7 @@ onMounted(async () => {
 
 <template>
   <main>
-    <button id="book">📖</button>
+    <RouterLink id="book" to="/book">📖</RouterLink>
     <div class="ingredients">
       <div class="filtertabs">
         <button id="meat">Meat</button>
@@ -35,6 +35,7 @@ onMounted(async () => {
         <div class="circle" v-for="ing in ingredients">
           {{ ing.name }}
           {{ ing.type }}
+          <img class="circle2" v-bind:src="ing.image" v-bind:alt="ing.name" />
         </div>
       </div>
     </div>
@@ -56,6 +57,10 @@ onMounted(async () => {
   position: absolute;
   top: 0%;
   right: 0%;
+  background-color: bisque;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .scrollable {
@@ -78,6 +83,19 @@ onMounted(async () => {
   min-width: 150px;
   min-height: 150px;
   border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.circle2 {
+  margin: 35px;
+  background-color: rgb(255, 207, 148);
+  max-width: 100px;
+  max-height: 100px;
+  min-width: 100px;
+  min-height: 100px;
+  border-radius: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
