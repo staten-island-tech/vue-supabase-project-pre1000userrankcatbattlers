@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { supabase } from "../../utils/supabase";
 import { ref, onMounted, type Ref } from "vue";
+import circleitem from "../components/circleitem.vue";
 type Ingredient = {
   name: string;
   image: string;
@@ -17,11 +18,21 @@ async function getingredients() {
 onMounted(async () => {
   await getingredients();
 });
+
+function add() {}
 </script>
 
 <template>
   <main>
     <RouterLink id="book" to="/book">📖</RouterLink>
+
+    <div class="activeingredients">
+      <div class="ing1">a</div>
+      <div class="ing2">b</div>
+      <div class="ing3">c</div>
+      <div class="ing3">d</div>
+    </div>
+
     <div class="ingredients">
       <div class="filtertabs">
         <button id="meat">Meat</button>
@@ -32,17 +43,22 @@ onMounted(async () => {
         <button id="dairy">Water</button>
       </div>
       <div class="scrollable">
-        <div class="circle" v-for="ing in ingredients">
-          {{ ing.name }}
-          {{ ing.type }}
-          <img class="circle2" v-bind:src="ing.image" v-bind:alt="ing.name" />
-        </div>
+        <circleitem
+          v-for="ing in ingredients"
+          :name="ing.name"
+          :type="ing.type"
+          :image="ing.image"
+          @click="add"
+        />
       </div>
     </div>
   </main>
 </template>
 
 <style scoped>
+.activeingredients {
+  background-color: blueviolet;
+}
 .filtertabs {
   position: absolute;
   bottom: 24.9%;
@@ -86,6 +102,7 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
 }
 
 .circle2 {
