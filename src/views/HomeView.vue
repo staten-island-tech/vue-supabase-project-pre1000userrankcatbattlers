@@ -8,31 +8,63 @@ type Ingredient = {
   type: string;
 };
 
+type recipe = {
+  name: string;
+  "ingredient 1": string;
+  "ingredient 2"?: string;
+  "ingredient 3"?: string;
+  "ingredient 4"?: string;
+  image?: string;
+};
+
 const ingredients: Ref<Ingredient[]> = ref([]);
+const recipes: Ref<recipe[]> = ref([]);
 async function getingredients() {
   const response = await supabase.from("ingredients").select();
   console.log(response);
   ingredients.value = response.data as Ingredient[];
+
+  const response2 = await supabase.from("recipes").select();
+  console.log(response2);
+  recipes.value = response2.data as recipe[];
 }
 
 onMounted(async () => {
   await getingredients();
 });
 
-function add() {}
+const selectedIngredients: Ref<Ingredient[]> = ref([]);
+
+function add(ing: Ingredient) {
+  console.log(ing);
+  if (selectedIngredients.value.length >= 4) return;
+  selectedIngredients.value.push(ing);
+}
+
+function remove(ing: Ingredient) {
+  console.log(ing);
+  selectedIngredients.value.splice(selectedIngredients.value.indexOf(ing), 1);
+}
+
+async function cook() {
+  selectedIngredients.value.sort();
+  recipes.value.filter((dish) => dish["ingredient 1"]);
+}
 </script>
 
 <template>
   <main>
     <RouterLink id="book" to="/book">📖</RouterLink>
-
-    <div class="activeingredients">
-      <div class="ing1">a</div>
-      <div class="ing2">b</div>
-      <div class="ing3">c</div>
-      <div class="ing3">d</div>
-    </div>
-
+    <circleitem
+      v-for="ing in selectedIngredients"
+      :name="ing.name"
+      :type="ing.type"
+      :image="ing.image"
+      @click="remove(ing)"
+    >
+      {{ ing.name }}
+    </circleitem>
+    <button class="button-92" role="button" @click="cook">Kook</button>
     <div class="ingredients">
       <div class="filtertabs">
         <button id="meat">Meat</button>
@@ -48,7 +80,7 @@ function add() {}
           :name="ing.name"
           :type="ing.type"
           :image="ing.image"
-          @click="add"
+          @click="add(ing)"
         />
       </div>
     </div>
@@ -56,6 +88,44 @@ function add() {}
 </template>
 
 <style scoped>
+/* CSS */
+.button-92 {
+  --c: #fff;
+  /* text color */
+  background: linear-gradient(90deg, #0000 33%, #fff5, #0000 67%)
+      var(--_p, 100%) / 300% no-repeat,
+    #001aff;
+  /* background color */
+  color: #0000;
+  border: none;
+  transform: perspective(500px) rotateY(calc(20deg * var(--_i, -1)));
+  text-shadow: calc(var(--_i, -1) * 0.08em) -0.01em 0 var(--c),
+    calc(var(--_i, -1) * -0.08em) 0.01em 2px #0004;
+  outline-offset: 0.1em;
+  transition: 0.3s;
+}
+
+.button-92:hover,
+.button-92:focus-visible {
+  --_p: 0%;
+  --_i: 1;
+}
+
+.button-92:active {
+  text-shadow: none;
+  color: var(--c);
+  box-shadow: inset 0 0 9e9Q #0005;
+  transition: 0s;
+}
+
+.button-92 {
+  font-weight: bold;
+  font-size: 2rem;
+  margin: 0;
+  cursor: pointer;
+  padding: 0.1em 0.3em;
+}
+
 .activeingredients {
   background-color: blueviolet;
 }
@@ -89,32 +159,5 @@ function add() {}
   display: flex;
   flex-direction: row;
   z-index: 99;
-}
-
-.circle {
-  margin: 35px;
-  background-color: rgb(255, 207, 148);
-  max-width: 150px;
-  max-height: 150px;
-  min-width: 150px;
-  min-height: 150px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-
-.circle2 {
-  margin: 35px;
-  background-color: rgb(255, 207, 148);
-  max-width: 100px;
-  max-height: 100px;
-  min-width: 100px;
-  min-height: 100px;
-  border-radius: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 </style>
