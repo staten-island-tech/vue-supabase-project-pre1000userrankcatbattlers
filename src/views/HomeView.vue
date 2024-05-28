@@ -2,6 +2,7 @@
 import { supabase } from "../../utils/supabase";
 import { ref, onMounted, type Ref } from "vue";
 import circleitem from "../components/circleitem.vue";
+const health: Ref<number | null> = ref(100);
 type Ingredient = {
   name: string;
   image: string;
@@ -47,25 +48,54 @@ function remove(ing: Ingredient) {
   selectedIngredients.value.splice(selectedIngredients.value.indexOf(ing), 1);
 }
 
-const recipesorted: string[] = [];
-async function cook() {
-  selectedIngredients.value.sort();
-  /* recipes.value.filter((dish) => ); */
-
-  for (let i = 0; i < recipes.value.length; i++) {
-    let ind: recipe = recipes.value[i];
-    console.log(ind["Dish Name"]);
-    doop(recipes.value[i]);
+async function DoofenshmirtzEvilIncorporated() {
+  const cooking = selectedIngredients.value
+    .map((ing) => ing.name)
+    .sort()
+    .join(";");
+  console.log(cooking);
+  const cookingRecipes = recipes.value.map((ind: recipe) => {
+    return [
+      ind["ingredient 1"],
+      ind["ingredient 2"],
+      ind["ingredient 3"],
+      ind["ingredient 4"],
+    ]
+      .sort()
+      .join(";");
+  });
+  console.log(cookingRecipes);
+  const index = cookingRecipes.indexOf(cooking);
+  if (index === -1) {
+    alert("DESPITE ALL MY RAGE");
+    const die = async () => {
+      if (health.value === null) {
+        localStorage.clear();
+        confirm("You died!");
+        window.location.reload();
+        return;
+      }
+      health.value -= Math.ceil(Math.random() * 10);
+      if (health.value < 1) {
+        health.value = null;
+        confirm("You are burning!");
+        return;
+      }
+      setTimeout(die, 100);
+    };
+    setTimeout(die, 100);
+    return;
   }
-}
-
-function doop(object1: recipe) {
-  const descriptors1 = Object.getOwnPropertyDescriptors(object1);
+  alert(`you are cooking ${recipes.value[index]["Dish Name"]}`);
 }
 </script>
 
 <template>
   <main>
+    <h1>
+      ❤ {{ health === null ? 0 : health
+      }}<span style="font-size: small">/100</span>
+    </h1>
     <RouterLink id="book" to="/book">📖</RouterLink>
     <circleitem
       v-for="ing in selectedIngredients"
@@ -76,7 +106,13 @@ function doop(object1: recipe) {
     >
       {{ ing.name }}
     </circleitem>
-    <button class="button-92" role="button" @click="cook">Kook</button>
+    <button
+      class="button-92"
+      role="button"
+      @click="DoofenshmirtzEvilIncorporated"
+    >
+      Kook
+    </button>
     <div class="ingredients">
       <div class="filtertabs">
         <button id="meat">Meat</button>
@@ -115,6 +151,8 @@ function doop(object1: recipe) {
     calc(var(--_i, -1) * -0.08em) 0.01em 2px #0004;
   outline-offset: 0.1em;
   transition: 0.3s;
+  position: absolute;
+  z-index: 100;
 }
 
 .button-92:hover,
