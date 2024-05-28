@@ -9,7 +9,7 @@ type Ingredient = {
 };
 
 type recipe = {
-  name: string;
+  "Dish Name": string;
   "ingredient 1": string;
   "ingredient 2"?: string;
   "ingredient 3"?: string;
@@ -39,6 +39,7 @@ function add(ing: Ingredient) {
   console.log(ing);
   if (selectedIngredients.value.length >= 4) return;
   selectedIngredients.value.push(ing);
+  console.log(selectedIngredients);
 }
 
 function remove(ing: Ingredient) {
@@ -46,9 +47,20 @@ function remove(ing: Ingredient) {
   selectedIngredients.value.splice(selectedIngredients.value.indexOf(ing), 1);
 }
 
+const recipesorted: string[] = [];
 async function cook() {
   selectedIngredients.value.sort();
-  recipes.value.filter((dish) => dish["ingredient 1"]);
+  /* recipes.value.filter((dish) => ); */
+
+  for (let i = 0; i < recipes.value.length; i++) {
+    let ind: recipe = recipes.value[i];
+    console.log(ind["Dish Name"]);
+    doop(recipes.value[i]);
+  }
+}
+
+function doop(object1: recipe) {
+  const descriptors1 = Object.getOwnPropertyDescriptors(object1);
 }
 </script>
 
