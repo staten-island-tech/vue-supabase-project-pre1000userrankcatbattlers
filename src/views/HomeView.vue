@@ -2,7 +2,8 @@
 import { supabase } from "../../utils/supabase";
 import { ref, onMounted, type Ref } from "vue";
 import circleitem from "../components/circleitem.vue";
-const health: Ref<number | null> = ref(100);
+const health: Ref<number> = ref(100);
+const burn = ref(0);
 type Ingredient = {
   name: string;
   image: string;
@@ -48,6 +49,7 @@ function remove(ing: Ingredient) {
   selectedIngredients.value.splice(selectedIngredients.value.indexOf(ing), 1);
 }
 
+const timeout: Ref<NodeJS.Timeout | null> = ref(null);
 async function DoofenshmirtzEvilIncorporated() {
   const cooking = selectedIngredients.value
     .map((ing) => ing.name)
@@ -62,39 +64,51 @@ async function DoofenshmirtzEvilIncorporated() {
       ind["ingredient 4"],
     ]
       .sort()
+      .filter((ing) => ing)
       .join(";");
   });
   console.log(cookingRecipes);
   const index = cookingRecipes.indexOf(cooking);
   if (index === -1) {
-    alert("DESPITE ALL MY RAGE");
+    burn.value++;
     const die = async () => {
-      if (health.value === null) {
+      if (health.value < 1) {
         localStorage.clear();
-        confirm("You died!");
+        confirm("You got cooked!");
+        console.log("OWWW");
         window.location.reload();
         return;
       }
-      health.value -= Math.ceil(Math.random() * 10);
-      if (health.value < 1) {
-        health.value = null;
-        confirm("You are burning!");
-        return;
-      }
-      setTimeout(die, 100);
+      health.value -= Math.ceil(Math.random() * burn.value);
+      timeout.value = setTimeout(die, 100);
     };
-    setTimeout(die, 100);
+    if (!timeout.value) timeout.value = setTimeout(die, 100);
     return;
   }
+  if (timeout.value) {
+    alert("you successfully put yourself out!");
+    clearTimeout(timeout.value);
+    timeout.value = null;
+  }
   alert(`you are cooking ${recipes.value[index]["Dish Name"]}`);
+  health.value -= Math.ceil(Math.random() * burn.value);
+  burn.value--;
 }
 </script>
 
 <template>
   <main>
     <h1>
-      ❤ {{ health === null ? 0 : health
-      }}<span style="font-size: small">/100</span>
+      {{ timeout }}
+      ❤ {{ health < 1 ? 0 : health }}
+      <span style="font-size: small">/100</span>
+      <span v-if="timeout"
+        >YOU ARE BURNING!!! gasoline level:
+        <span style="color: red; font-weight: bolder">{{ burn }}</span></span
+      >
+      <span v-if="burn > 0 && !timeout"
+        >gasoline level: <span style="font-weight: bold">{{ burn }}</span></span
+      >
     </h1>
     <RouterLink id="book" to="/book">📖</RouterLink>
     <circleitem
