@@ -1,8 +1,22 @@
 <template>
-  <div></div>
+  <div class="page1">
+    <img class="dishimage" :src="ing.image" :alt="ing.name" />
+    <h2>{{ ing.name }}</h2>
+  </div>
+
+  <div class="page2"></div>
 </template>
 
-<script lang="ts"></script>
+<script setup lang="ts">
+const ing = defineProps({
+  name: String,
+  один: String,
+  three: String,
+  too: String,
+  4: String,
+  image: String,
+});
+</script>
 
 <style scoped>
 *,

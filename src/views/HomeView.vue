@@ -2,6 +2,8 @@
 import { supabase } from "../../utils/supabase";
 import { ref, onMounted, type Ref } from "vue";
 import circleitem from "../components/circleitem.vue";
+const health: Ref<number> = ref(100);
+const burn = ref(0);
 type Ingredient = {
   name: string;
   image: string;
@@ -47,25 +49,67 @@ function remove(ing: Ingredient) {
   selectedIngredients.value.splice(selectedIngredients.value.indexOf(ing), 1);
 }
 
-const recipesorted: string[] = [];
-async function cook() {
-  selectedIngredients.value.sort();
-  /* recipes.value.filter((dish) => ); */
-
-  for (let i = 0; i < recipes.value.length; i++) {
-    let ind: recipe = recipes.value[i];
-    console.log(ind["Dish Name"]);
-    doop(recipes.value[i]);
+const timeout: Ref<NodeJS.Timeout | null> = ref(null);
+async function DoofenshmirtzEvilIncorporated() {
+  const cooking = selectedIngredients.value
+    .map((ing) => ing.name)
+    .sort()
+    .join(";");
+  console.log(cooking);
+  const cookingRecipes = recipes.value.map((ind: recipe) => {
+    return [
+      ind["ingredient 1"],
+      ind["ingredient 2"],
+      ind["ingredient 3"],
+      ind["ingredient 4"],
+    ]
+      .sort()
+      .filter((ing) => ing)
+      .join(";");
+  });
+  console.log(cookingRecipes);
+  const index = cookingRecipes.indexOf(cooking);
+  if (index === -1) {
+    burn.value++;
+    const die = async () => {
+      if (health.value < 1) {
+        localStorage.clear();
+        confirm("You got cooked!");
+        console.log("OWWW");
+        window.location.reload();
+        return;
+      }
+      health.value -= Math.ceil(Math.random() * burn.value);
+      timeout.value = setTimeout(die, 100);
+    };
+    if (!timeout.value) timeout.value = setTimeout(die, 100);
+    return;
   }
-}
-
-function doop(object1: recipe) {
-  const descriptors1 = Object.getOwnPropertyDescriptors(object1);
+  if (timeout.value) {
+    alert("you successfully put yourself out!");
+    clearTimeout(timeout.value);
+    timeout.value = null;
+  }
+  alert(`you are cooking ${recipes.value[index]["Dish Name"]}`);
+  health.value -= Math.ceil(Math.random() * burn.value);
+  burn.value--;
 }
 </script>
 
 <template>
   <main>
+    <h1>
+      {{ timeout }}
+      ❤ {{ health < 1 ? 0 : health }}
+      <span style="font-size: small">/100</span>
+      <span v-if="timeout"
+        >YOU ARE BURNING!!! gasoline level:
+        <span style="color: red; font-weight: bolder">{{ burn }}</span></span
+      >
+      <span v-if="burn > 0 && !timeout"
+        >gasoline level: <span style="font-weight: bold">{{ burn }}</span></span
+      >
+    </h1>
     <RouterLink id="book" to="/book">📖</RouterLink>
     <circleitem
       v-for="ing in selectedIngredients"
@@ -76,7 +120,13 @@ function doop(object1: recipe) {
     >
       {{ ing.name }}
     </circleitem>
-    <button class="button-92" role="button" @click="cook">Kook</button>
+    <button
+      class="button-92"
+      role="button"
+      @click="DoofenshmirtzEvilIncorporated"
+    >
+      Kook
+    </button>
     <div class="ingredients">
       <div class="filtertabs">
         <button id="meat">Meat</button>
@@ -115,6 +165,8 @@ function doop(object1: recipe) {
     calc(var(--_i, -1) * -0.08em) 0.01em 2px #0004;
   outline-offset: 0.1em;
   transition: 0.3s;
+  position: absolute;
+  z-index: 100;
 }
 
 .button-92:hover,
