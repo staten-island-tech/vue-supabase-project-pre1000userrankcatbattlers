@@ -41,6 +41,24 @@ async function getProfile() {
   }
 }
 
+// const indexnum = ref(0);
+// function change() {
+//   indexnum.value += 1;
+//   console.log(indexnum.value);
+//   setTimeout(change, 1000);
+// }
+
+const indexnum = ref(0);
+function change() {
+  indexnum.value += 1;
+  if (indexnum.value > 3) {
+    indexnum.value = 1;
+  }
+  console.log(indexnum.value);
+}
+
+setInterval(change, 1000);
+
 async function updateProfile() {
   try {
     loading.value = true;
@@ -98,6 +116,9 @@ async function signOut() {
     </div>
     <div>
       <img :src="food_img" :alt="username" />
+    </div>
+    <div>
+      <img src="" alt="" />
     </div>
 
     <div>
