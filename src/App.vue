@@ -2,8 +2,8 @@
 
 <template>
   <nav>
-    <RouterLink to="/">Home</RouterLink>
-    <RouterLink to="/login">Login Page</RouterLink>
+    <RouterLink to="/home">User Page</RouterLink>
+    <RouterLink to="/">Login Page</RouterLink>
   </nav>
   <RouterView> </RouterView>
 </template>
