@@ -1,5 +1,5 @@
 <template>
-  <div class="circle">
+  <div class="circle" :title="ing.name">
     {{ ing.name }}
     {{ ing.type }}
     <img class="circle2" :src="ing.image" :alt="ing.name" />
