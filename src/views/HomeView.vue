@@ -4,6 +4,8 @@ import { ref, onMounted, type Ref } from "vue";
 import circleitem from "../components/circleitem.vue";
 const health: Ref<number> = ref(100);
 const burn = ref(0);
+const dialog: Ref<HTMLDialogElement | null> = ref(null);
+const cooking2: Ref<recipe | null> = ref(null);
 type Ingredient = {
   name: string;
   image: string;
@@ -51,6 +53,7 @@ function remove(ing: Ingredient) {
 
 const timeout: Ref<NodeJS.Timeout | null> = ref(null);
 async function DoofenshmirtzEvilIncorporated() {
+  console.log("meow");
   const cooking = selectedIngredients.value
     .map((ing) => ing.name)
     .sort()
@@ -90,14 +93,29 @@ async function DoofenshmirtzEvilIncorporated() {
     clearTimeout(timeout.value);
     timeout.value = null;
   }
-  alert(`you are cooking ${recipes.value[index]["Dish Name"]}`);
+
+  cooking2.value = recipes.value[index];
+  if (!dialog.value) return;
+  dialog.value.showModal();
+
   health.value -= Math.ceil(Math.random() * burn.value);
   burn.value--;
+}
+
+function explode() {
+  if (!dialog.value) return;
+  dialog.value.close();
 }
 </script>
 
 <template>
   <main>
+    <dialog ref="dialog" class="dialog">
+      <h2>thou be cooking {{ cooking2 ? cooking2["Dish Name"] : "slop" }}</h2>
+      <button alt="click escape to return" @click="explode">
+        click to return
+      </button>
+    </dialog>
     <h1>
       {{ timeout }}
       ❤ {{ health < 1 ? 0 : health }}
@@ -223,5 +241,11 @@ async function DoofenshmirtzEvilIncorporated() {
   display: flex;
   flex-direction: row;
   z-index: 99;
+}
+
+.dialog {
+  position: absolute;
+  left: 50%;
+  top: 50%;
 }
 </style>
