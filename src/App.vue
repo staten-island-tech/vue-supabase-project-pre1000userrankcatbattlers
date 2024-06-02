@@ -1,15 +1,5 @@
 <script setup lang="ts">
 import {RouterView} from 'vue-router'
-import { userSessionStore } from './stores/userSession';
-import {supabase} from '../utils/supabase'
-
-const userSession = userSessionStore()
-
-//listen for auth events (sign i n, signout, refresh)
-supabase.auth.onAuthStateChange((event, session) => {
-  console.log(event)
-  userSession.session = session
-})
 </script>
 
 <template>
