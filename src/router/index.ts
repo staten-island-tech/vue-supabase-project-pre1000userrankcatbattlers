@@ -27,7 +27,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "../views/HomeView.vue";
 
-const router = createRouter({
+export const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
@@ -44,6 +44,11 @@ const router = createRouter({
       path: "/book",
       name: "book",
       component: () => import("../views/BookRec.vue"),
+    },
+    {
+      path: "/new",
+      name: "new",
+      component: () => import("../views/CreateRecipe.vue"),
     },
   ],
 });

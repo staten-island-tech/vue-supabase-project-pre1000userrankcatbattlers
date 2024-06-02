@@ -1,10 +1,15 @@
 <script setup>
+import { router } from "../router/index";
 import { onMounted, ref } from "vue";
 import Account from "../components/Account.vue";
 import Auth from "../components/Auth.vue";
 import { supabase } from "../../utils/supabase";
+import { FunctionsError } from "@supabase/supabase-js";
 const session = ref();
 
+function changePage() {
+  router.push("/home");
+}
 onMounted(() => {
   supabase.auth.getSession().then(({ data }) => {
     session.value = data.session;
@@ -18,7 +23,7 @@ onMounted(() => {
 
 <template>
   <div class="container" style="padding: 50px 0 100px 0">
-    <Account v-if="session" :session="session" />
+    <changePage v-if="session" :session="session" />
     <Auth v-else />
   </div>
 </template>

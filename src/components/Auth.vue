@@ -6,14 +6,14 @@ const loading = ref(false);
 const email = ref("");
 const password = ref("");
 
-async function handleSignup() {
+async function handleLogin() {
   const { data, error } = await supabase.auth.signInWithPassword({
     email: email.value,
     password: password.value,
   });
 }
 
-async function handleLogin() {
+async function handleSignup() {
   try {
     loading.value = true;
     console.log(email.value);
@@ -61,7 +61,7 @@ async function handleLogin() {
         <input
           type="submit"
           class="button block"
-          @click="handleLogin"
+          @click="handleSignup"
           :value="loading ? 'Loading' : 'Sign Up'"
           :disabled="loading"
         />
@@ -70,7 +70,7 @@ async function handleLogin() {
         <input
           type="submit"
           class="button block"
-          @click="handleSignup"
+          @click="handleLogin"
           :value="loading ? 'Loading' : 'Sign in'"
           :disabled="loading"
         />

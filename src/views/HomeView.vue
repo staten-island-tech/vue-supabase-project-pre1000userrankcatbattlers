@@ -2,8 +2,11 @@
 import { supabase } from "../../utils/supabase";
 import { ref, onMounted, type Ref } from "vue";
 import circleitem from "../components/circleitem.vue";
+import { router } from "@/router";
+import { RouterLink } from "vue-router";
 const health: Ref<number> = ref(100);
 const burn = ref(0);
+const loading = ref(true);
 type Ingredient = {
   name: string;
   image: string;
@@ -94,10 +97,30 @@ async function DoofenshmirtzEvilIncorporated() {
   health.value -= Math.ceil(Math.random() * burn.value);
   burn.value--;
 }
+
+async function signOut() {
+  try {
+    loading.value = true;
+    const { error } = await supabase.auth.signOut();
+    if (error) throw error;
+  } catch (error) {
+    // @ts-ignore
+    alert(error.message);
+  } finally {
+    loading.value = false;
+    await router.push("/");
+  }
+}
+
+async function createNewRecipe() {
+  await router.push("/new");
+}
 </script>
 
 <template>
   <main>
+    <button @click="signOut">log Out</button>
+    <button @click="createNewRecipe">Create New Recipes</button>
     <h1>
       {{ timeout }}
       ❤ {{ health < 1 ? 0 : health }}
