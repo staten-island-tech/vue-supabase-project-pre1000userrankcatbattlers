@@ -84,7 +84,8 @@ async function DoofenshmirtzEvilIncorporated() {
       .sort()
       .filter((ing) => ing)
       .join(";");
-  });
+  }); // cheese;cheese;egg;egg;
+
   console.log(cookingRecipes);
   const index = cookingRecipes.indexOf(cooking);
   if (index === -1) {
