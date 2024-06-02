@@ -1,7 +1,6 @@
 <template>
   <div class="circle" :title="ing.name">
-    {{ ing.name }}
-    {{ ing.type }}
+    <h2 class="name"> {{ ing.name }}</h2>
     <img class="circle2" :src="ing.image" :alt="ing.name" />
   </div>
 </template>
@@ -27,6 +26,36 @@ const ing = defineProps({
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  position: relative;
+  text-align: center;
+  color: black;
+}
+
+.name {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #e0dfdc;
+  background-color: #333;
+  letter-spacing: .1em;
+  
+}
+
+h2{
+  font-family: "Avant Garde", Avantgarde, "Century Gothic", CenturyGothic, "AppleGothic", sans-serif;
+  font-size: 10px;
+  padding: 8px 5px;
+  text-align: center;
+  text-transform: uppercase;
+  text-rendering: optimizeLegibility;
+}
+
+.type{
+  position: absolute;
+  top: 70%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .circle2 {
@@ -39,6 +68,6 @@ const ing = defineProps({
   border-radius: 100%;
   display: flex;
   align-items: center;
-  justify-content: center;
+
 }
 </style>

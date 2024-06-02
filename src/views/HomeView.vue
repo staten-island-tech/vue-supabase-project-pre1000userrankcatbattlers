@@ -4,6 +4,8 @@ import { ref, onMounted, type Ref } from "vue";
 import circleitem from "../components/circleitem.vue";
 const health: Ref<number> = ref(100);
 const burn = ref(0);
+const dialog: Ref<HTMLDialogElement | null> = ref(null);
+const cooking2: Ref<recipe | null> = ref(null);
 type Ingredient = {
   name: string;
   image: string;
@@ -18,21 +20,25 @@ type recipe = {
   "ingredient 4"?: string;
   image?: string;
 };
-
+//actual ingredient / cooking stuff
 const ingredients: Ref<Ingredient[]> = ref([]);
+const ingredientsfiltered: Ref<Ingredient[]> = ref([]);
 const recipes: Ref<recipe[]> = ref([]);
 async function getingredients() {
   const response = await supabase.from("ingredients").select();
   console.log(response);
   ingredients.value = response.data as Ingredient[];
+  ingredientsfiltered.value = response.data as Ingredient[];
 
   const response2 = await supabase.from("recipes").select();
   console.log(response2);
   recipes.value = response2.data as recipe[];
+  console.log(recipes)
 }
 
 onMounted(async () => {
   await getingredients();
+  getType();
 });
 
 const selectedIngredients: Ref<Ingredient[]> = ref([]);
@@ -49,8 +55,17 @@ function remove(ing: Ingredient) {
   selectedIngredients.value.splice(selectedIngredients.value.indexOf(ing), 1);
 }
 
+function die() {
+  localStorage.clear();
+  confirm("You got cooked!");
+  console.log("OWWW");
+  window.location.reload();
+  return;
+}
+
 const timeout: Ref<NodeJS.Timeout | null> = ref(null);
 async function DoofenshmirtzEvilIncorporated() {
+  console.log("meow");
   const cooking = selectedIngredients.value
     .map((ing) => ing.name)
     .sort()
@@ -71,18 +86,13 @@ async function DoofenshmirtzEvilIncorporated() {
   const index = cookingRecipes.indexOf(cooking);
   if (index === -1) {
     burn.value++;
-    const die = async () => {
-      if (health.value < 1) {
-        localStorage.clear();
-        confirm("You got cooked!");
-        console.log("OWWW");
-        window.location.reload();
-        return;
-      }
+    const burning = async () => {
+      if (health.value < 1) die();
+
       health.value -= Math.ceil(Math.random() * burn.value);
-      timeout.value = setTimeout(die, 100);
+      timeout.value = setTimeout(burning, 100);
     };
-    if (!timeout.value) timeout.value = setTimeout(die, 100);
+    if (!timeout.value) timeout.value = setTimeout(burning, 100);
     return;
   }
   if (timeout.value) {
@@ -90,16 +100,62 @@ async function DoofenshmirtzEvilIncorporated() {
     clearTimeout(timeout.value);
     timeout.value = null;
   }
-  alert(`you are cooking ${recipes.value[index]["Dish Name"]}`);
+
+  cooking2.value = recipes.value[index];
+  if (!dialog.value) return;
+  dialog.value.showModal();
+
   health.value -= Math.ceil(Math.random() * burn.value);
-  burn.value--;
+  if(burn.value > 0) burn.value--;
+}
+
+function explode() {
+  if (!dialog.value) return;
+  dialog.value.close();
+  
+  selectedIngredients.value = [];
+}
+const actualalltypewithoutdupes: Ref<string[]> = ref([])
+//Getting types for filtering purposes
+function getType(){
+  // don't cook without ingredients, worst mistake of my life
+  if (ingredients.value.length === 0) return;
+  const alltype = ingredients.value.map((ing: Ingredient) => {
+    return ing.type
+  })
+  console.log(alltype)
+  actualalltypewithoutdupes.value = Array.from(new Set(alltype))
+  console.log(actualalltypewithoutdupes)
+}
+
+//button filtering
+function filterbar(type:string){
+  if (type === "all") {
+    ingredientsfiltered.value = ingredients.value;
+    return;
+  }
+  ingredientsfiltered.value = ingredients.value.filter((ing) => ing.type == type)
+}
+
+
+// DESPITE ALL MY RAGE
+const scrollable:Ref<HTMLDivElement|null> = ref(null);
+function scroll(e:WheelEvent) {
+  if (!scrollable.value) return;
+  e.preventDefault();
+  scrollable.value.scrollLeft += e.deltaY;
 }
 </script>
 
 <template>
   <main>
+    <dialog ref="dialog" class="dialog">
+      <h2>thou be cooking {{ cooking2 ? cooking2["Dish Name"] : "slop" }}</h2>
+      <button alt="click escape to return" @click="explode">
+        click to return
+      </button>
+    </dialog>
     <h1>
-      {{ timeout }}
       ❤ {{ health < 1 ? 0 : health }}
       <span style="font-size: small">/100</span>
       <span v-if="timeout"
@@ -110,16 +166,18 @@ async function DoofenshmirtzEvilIncorporated() {
         >gasoline level: <span style="font-weight: bold">{{ burn }}</span></span
       >
     </h1>
-    <RouterLink id="book" to="/book">📖</RouterLink>
-    <circleitem
-      v-for="ing in selectedIngredients"
-      :name="ing.name"
-      :type="ing.type"
-      :image="ing.image"
-      @click="remove(ing)"
-    >
-      {{ ing.name }}
-    </circleitem>
+    <RouterLink v-if="!timeout" id="book" to="/book" ><v-icon name="vi-file-type-chef-cookbook" scale="4"></v-icon></RouterLink>
+    <div class="activeingredients">
+      <circleitem
+        v-for="ing in selectedIngredients"
+        :name="ing.name"
+        :type="ing.type"  
+        :image="ing.image"
+        @click="remove(ing)"
+      >
+        {{ ing.name }}
+      </circleitem>
+    </div>
     <button
       class="button-92"
       role="button"
@@ -129,21 +187,21 @@ async function DoofenshmirtzEvilIncorporated() {
     </button>
     <div class="ingredients">
       <div class="filtertabs">
-        <button id="meat">Meat</button>
-        <button id="vegetable">Vegetable</button>
-        <button id="fruit">Fruit</button>
-        <button id="grain">Grain</button>
-        <button id="condiment">Condiment</button>
-        <button id="dairy">Water</button>
+        <button id="all" @click="filterbar('all')">all</button>
+        <button v-for="atype in actualalltypewithoutdupes" :id="atype" :key="atype" @click="filterbar(atype)">{{ atype }}</button>
       </div>
-      <div class="scrollable">
+      <div class="scrollable" ref="scrollable" @wheel="scroll">
         <circleitem
-          v-for="ing in ingredients"
+          v-for="ing in ingredientsfiltered"
           :name="ing.name"
           :type="ing.type"
           :image="ing.image"
+          class="ingredient"
           @click="add(ing)"
         />
+        <button @click="die" class="die" title="free rewards!!">
+          <circleitem name="The Escape Plan" type="tool" image="https://i.imgflip.com/494yn4.jpg"></circleitem>
+        </button>
       </div>
     </div>
   </main>
@@ -152,6 +210,8 @@ async function DoofenshmirtzEvilIncorporated() {
 <style scoped>
 /* CSS */
 .button-92 {
+  width:100%;
+  text-align: center;
   --c: #fff;
   /* text color */
   background: linear-gradient(90deg, #0000 33%, #fff5, #0000 67%)
@@ -191,26 +251,37 @@ async function DoofenshmirtzEvilIncorporated() {
 }
 
 .activeingredients {
+  height:220px;
   background-color: blueviolet;
+  display:flex;
+  flex-direction: row;
+  justify-content: center
 }
+
+.ingredient {
+  cursor:pointer;
+  border:2px solid black;
+  padding:2px;
+}
+
 .filtertabs {
   position: absolute;
-  bottom: 24.9%;
+  bottom: 26%;
   left: 10%;
   z-index: 98;
 }
 
 #book {
-  font-size: 50px;
   height: 150px;
   width: 150px;
   position: absolute;
   top: 0%;
   right: 0%;
-  background-color: bisque;
+  background-color: rgb(85, 26, 139);
   display: flex;
   justify-content: center;
   align-items: center;
+  border-top-left-radius: 100rem;
 }
 
 .scrollable {
@@ -218,10 +289,35 @@ async function DoofenshmirtzEvilIncorporated() {
   position: absolute;
   bottom: 0%;
   left: 10%;
-  max-width: 80vw;
+  width: 80vw;
   overflow-x: scroll;
+  overflow-y: hidden;
   display: flex;
   flex-direction: row;
   z-index: 99;
+  gap:2px;
+}
+
+/* "centered" */
+.dialog {
+  position: absolute;
+  left:   0;
+  right:  0;
+  top:    0;
+  bottom: 0;
+  width:40%;
+}
+
+.die {
+  filter: opacity(0);
+  transition: filter 1s linear;
+  /* it's a square image whatever */
+  cursor:pointer;
+  width: 10px;
+  height: 10px;
+}
+
+.die:hover{
+  filter: opacity(1);
 }
 </style>
