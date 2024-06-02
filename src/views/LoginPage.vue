@@ -1,33 +1,29 @@
-<template>
-  <div class="form">
-    <h1>Test Form</h1>
-    <div class="Input">
-      <label for="email">Email: </label>
-      <input type="email" id="email" />
-    </div>
-    <div class="Input">
-      <label for="email">Password: </label>
-      <input type="password" id="password" />
-    </div>
+<script setup>
+import { router } from "../router/index";
+import { onMounted, ref } from "vue";
+import Account from "../components/Account.vue";
+import Auth from "../components/Auth.vue";
+import { supabase } from "../../utils/supabase";
+import { FunctionsError } from "@supabase/supabase-js";
+const session = ref();
 
-    <div class="buttons">
-      <button>Register</button>
-      <button>Login</button>
-    </div>
+function changePage() {
+  router.push("/home");
+}
+onMounted(() => {
+  supabase.auth.getSession().then(({ data }) => {
+    session.value = data.session;
+  });
+
+  supabase.auth.onAuthStateChange((_, _session) => {
+    session.value = _session;
+  });
+});
+</script>
+
+<template>
+  <div class="container" style="padding: 50px 0 100px 0">
+    <changePage v-if="session" :session="session" />
+    <Auth v-else />
   </div>
 </template>
-
-<style scoped>
-.form {
-  display: flex;
-  flex-direction: column;
-}
-
-@media (min-width: 1024px) {
-  .about {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-  }
-}
-</style>

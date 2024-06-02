@@ -2,8 +2,11 @@
 import { supabase } from "../../utils/supabase";
 import { ref, onMounted, type Ref } from "vue";
 import circleitem from "../components/circleitem.vue";
+import { router } from "@/router";
+import { RouterLink } from "vue-router";
 const health: Ref<number> = ref(100);
 const burn = ref(0);
+const loading = ref(true);
 const dialog: Ref<HTMLDialogElement | null> = ref(null);
 const cooking2: Ref<recipe | null> = ref(null);
 type Ingredient = {
@@ -33,7 +36,7 @@ async function getingredients() {
   const response2 = await supabase.from("recipes").select();
   console.log(response2);
   recipes.value = response2.data as recipe[];
-  console.log(recipes)
+  console.log(recipes);
 }
 
 onMounted(async () => {
@@ -106,49 +109,70 @@ async function DoofenshmirtzEvilIncorporated() {
   dialog.value.showModal();
 
   health.value -= Math.ceil(Math.random() * burn.value);
-  if(burn.value > 0) burn.value--;
+  if (burn.value > 0) burn.value--;
 }
 
 function explode() {
   if (!dialog.value) return;
   dialog.value.close();
-  
+
   selectedIngredients.value = [];
 }
-const actualalltypewithoutdupes: Ref<string[]> = ref([])
+const actualalltypewithoutdupes: Ref<string[]> = ref([]);
 //Getting types for filtering purposes
-function getType(){
+function getType() {
   // don't cook without ingredients, worst mistake of my life
   if (ingredients.value.length === 0) return;
   const alltype = ingredients.value.map((ing: Ingredient) => {
-    return ing.type
-  })
-  console.log(alltype)
-  actualalltypewithoutdupes.value = Array.from(new Set(alltype))
-  console.log(actualalltypewithoutdupes)
+    return ing.type;
+  });
+  console.log(alltype);
+  actualalltypewithoutdupes.value = Array.from(new Set(alltype));
+  console.log(actualalltypewithoutdupes);
 }
 
 //button filtering
-function filterbar(type:string){
+function filterbar(type: string) {
   if (type === "all") {
     ingredientsfiltered.value = ingredients.value;
     return;
   }
-  ingredientsfiltered.value = ingredients.value.filter((ing) => ing.type == type)
+  ingredientsfiltered.value = ingredients.value.filter(
+    (ing) => ing.type == type
+  );
 }
 
-
 // DESPITE ALL MY RAGE
-const scrollable:Ref<HTMLDivElement|null> = ref(null);
-function scroll(e:WheelEvent) {
+const scrollable: Ref<HTMLDivElement | null> = ref(null);
+function scroll(e: WheelEvent) {
   if (!scrollable.value) return;
   e.preventDefault();
   scrollable.value.scrollLeft += e.deltaY;
+}
+
+async function signOut() {
+  try {
+    loading.value = true;
+    const { error } = await supabase.auth.signOut();
+    if (error) throw error;
+  } catch (error) {
+    // @ts-ignore
+    alert(error.message);
+  } finally {
+    loading.value = false;
+    await router.push("/");
+  }
+}
+
+async function createNewRecipe() {
+  await router.push("/new");
 }
 </script>
 
 <template>
   <main>
+    <button @click="signOut">log Out</button>
+    <button @click="createNewRecipe">Create New Recipes</button>
     <dialog ref="dialog" class="dialog">
       <h2>thou be cooking {{ cooking2 ? cooking2["Dish Name"] : "slop" }}</h2>
       <button alt="click escape to return" @click="explode">
@@ -166,12 +190,14 @@ function scroll(e:WheelEvent) {
         >gasoline level: <span style="font-weight: bold">{{ burn }}</span></span
       >
     </h1>
-    <RouterLink v-if="!timeout" id="book" to="/book" ><v-icon name="vi-file-type-chef-cookbook" scale="4"></v-icon></RouterLink>
+    <RouterLink v-if="!timeout" id="book" to="/book"
+      ><v-icon name="vi-file-type-chef-cookbook" scale="4"></v-icon
+    ></RouterLink>
     <div class="activeingredients">
       <circleitem
         v-for="ing in selectedIngredients"
         :name="ing.name"
-        :type="ing.type"  
+        :type="ing.type"
         :image="ing.image"
         @click="remove(ing)"
       >
@@ -188,7 +214,14 @@ function scroll(e:WheelEvent) {
     <div class="ingredients">
       <div class="filtertabs">
         <button id="all" @click="filterbar('all')">all</button>
-        <button v-for="atype in actualalltypewithoutdupes" :id="atype" :key="atype" @click="filterbar(atype)">{{ atype }}</button>
+        <button
+          v-for="atype in actualalltypewithoutdupes"
+          :id="atype"
+          :key="atype"
+          @click="filterbar(atype)"
+        >
+          {{ atype }}
+        </button>
       </div>
       <div class="scrollable" ref="scrollable" @wheel="scroll">
         <circleitem
@@ -200,7 +233,11 @@ function scroll(e:WheelEvent) {
           @click="add(ing)"
         />
         <button @click="die" class="die" title="free rewards!!">
-          <circleitem name="The Escape Plan" type="tool" image="https://i.imgflip.com/494yn4.jpg"></circleitem>
+          <circleitem
+            name="The Escape Plan"
+            type="tool"
+            image="https://i.imgflip.com/494yn4.jpg"
+          ></circleitem>
         </button>
       </div>
     </div>
@@ -210,7 +247,7 @@ function scroll(e:WheelEvent) {
 <style scoped>
 /* CSS */
 .button-92 {
-  width:100%;
+  width: 100%;
   text-align: center;
   --c: #fff;
   /* text color */
@@ -251,17 +288,17 @@ function scroll(e:WheelEvent) {
 }
 
 .activeingredients {
-  height:220px;
+  height: 220px;
   background-color: blueviolet;
-  display:flex;
+  display: flex;
   flex-direction: row;
-  justify-content: center
+  justify-content: center;
 }
 
 .ingredient {
-  cursor:pointer;
-  border:2px solid black;
-  padding:2px;
+  cursor: pointer;
+  border: 2px solid black;
+  padding: 2px;
 }
 
 .filtertabs {
@@ -295,29 +332,29 @@ function scroll(e:WheelEvent) {
   display: flex;
   flex-direction: row;
   z-index: 99;
-  gap:2px;
+  gap: 2px;
 }
 
 /* "centered" */
 .dialog {
   position: absolute;
-  left:   0;
-  right:  0;
-  top:    0;
+  left: 0;
+  right: 0;
+  top: 0;
   bottom: 0;
-  width:40%;
+  width: 40%;
 }
 
 .die {
   filter: opacity(0);
   transition: filter 1s linear;
   /* it's a square image whatever */
-  cursor:pointer;
+  cursor: pointer;
   width: 10px;
   height: 10px;
 }
 
-.die:hover{
+.die:hover {
   filter: opacity(1);
 }
 </style>
