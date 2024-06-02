@@ -15,7 +15,7 @@ const ing = defineProps({
 
 <style lang="css" scoped>
 .circle {
-  margin: 35px;
+  margin: 35px 0;
   background-color: rgb(255, 207, 148);
   max-width: 150px;
   max-height: 150px;

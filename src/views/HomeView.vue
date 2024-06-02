@@ -115,7 +115,7 @@ async function DoofenshmirtzEvilIncorporated() {
 function explode() {
   if (!dialog.value) return;
   dialog.value.close();
-
+  console.log("bye")
   selectedIngredients.value = [];
 }
 const actualalltypewithoutdupes: Ref<string[]> = ref([]);
@@ -173,11 +173,15 @@ async function createNewRecipe() {
   <main>
     <button @click="signOut">log Out</button>
     <button @click="createNewRecipe">Create New Recipes</button>
-    <dialog ref="dialog" class="dialog">
-      <h2>thou be cooking {{ cooking2 ? cooking2["Dish Name"] : "slop" }}</h2>
+    <dialog ref="dialog" class="dialog" >
+      <div class="dialogue" v-if="cooking2">      
+          <img :src="cooking2.image" alt="" class="dishimage">
+        <h2>thou be cooking {{ cooking2["Dish Name"] }}</h2>
+      </div>
+      <p v-else>you are NOT cooking</p>
       <button alt="click escape to return" @click="explode">
-        click to return
-      </button>
+          click to return
+        </button>
     </dialog>
     <h1>
       ❤ {{ health < 1 ? 0 : health }}
@@ -194,23 +198,14 @@ async function createNewRecipe() {
       ><v-icon name="vi-file-type-chef-cookbook" scale="4"></v-icon
     ></RouterLink>
     <div class="activeingredients">
-      <circleitem
-        v-for="ing in selectedIngredients"
-        :name="ing.name"
-        :type="ing.type"
-        :image="ing.image"
-        @click="remove(ing)"
-      >
-        {{ ing.name }}
-      </circleitem>
+      <div v-for="index in 4" :key="index">
+        <circleitem 
+          v-if="selectedIngredients[index-1]" :name="selectedIngredients[index-1].name" :type="selectedIngredients[index-1].type"
+          :image="selectedIngredients[index-1].image" @click="remove(selectedIngredients[index-1])">
+        </circleitem>
+      </div>
     </div>
-    <button
-      class="button-92"
-      role="button"
-      @click="DoofenshmirtzEvilIncorporated"
-    >
-      Kook
-    </button>
+    <button class='start-btn' @click="DoofenshmirtzEvilIncorporated"><v-icon name="gi-small-fire" scale="4"/></button>
     <div class="ingredients">
       <div class="filtertabs">
         <button id="all" @click="filterbar('all')">all</button>
@@ -241,58 +236,71 @@ async function createNewRecipe() {
         </button>
       </div>
     </div>
+    <video id="background-video" src="/seal/catcook.mp4" autoplay loop muted type="video/mp4" ></video>
+
   </main>
 </template>
 
 <style scoped>
-/* CSS */
-.button-92 {
-  width: 100%;
+
+body{
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.dishimage{
+  max-width: 450px;
+  min-width: 450px;
+  max-height: 450px;
+  min-height: 450px;
+}
+
+#background-video{
+  width:110vw;
+  height:110vh;
+  position:fixed;
+  right: 0;
+  pointer-events: none;
+  filter: opacity(0.1) blur(5px) contrast(1000) brightness(10) hue-rotate(180deg);
+  bottom: 0;
+  z-index: 999;
+}
+
+.start-btn{
   text-align: center;
-  --c: #fff;
-  /* text color */
-  background: linear-gradient(90deg, #0000 33%, #fff5, #0000 67%)
-      var(--_p, 100%) / 300% no-repeat,
-    #001aff;
-  /* background color */
-  color: #0000;
-  border: none;
-  transform: perspective(500px) rotateY(calc(20deg * var(--_i, -1)));
-  text-shadow: calc(var(--_i, -1) * 0.08em) -0.01em 0 var(--c),
-    calc(var(--_i, -1) * -0.08em) 0.01em 2px #0004;
-  outline-offset: 0.1em;
-  transition: 0.3s;
-  position: absolute;
-  z-index: 100;
-}
-
-.button-92:hover,
-.button-92:focus-visible {
-  --_p: 0%;
-  --_i: 1;
-}
-
-.button-92:active {
-  text-shadow: none;
-  color: var(--c);
-  box-shadow: inset 0 0 9e9Q #0005;
-  transition: 0s;
-}
-
-.button-92 {
+	display: flex;
+	margin:5px;
   font-weight: bold;
-  font-size: 2rem;
-  margin: 0;
+  padding: 10px 10px 10px 10px ;
+  background-color: rgb(0, 68, 156);
+  text-shadow: -1px -1px black, 1px 1px white;
+  color: white;
+  -webkit-border-radius: 7px;
+	-moz-border-radius: 7px;
+	-o-border-radius: 7px;
+  border-radius:7px;
+	border-color: rgb(255, 208, 1);
+  box-shadow: 0 .2em gray; 
   cursor: pointer;
-  padding: 0.1em 0.3em;
+  margin: 0 auto;
+  align-items: center;
+  justify-content: center;
 }
 
 .activeingredients {
   height: 220px;
-  background-color: blueviolet;
   display: flex;
   flex-direction: row;
-  justify-content: center;
+  gap:46px;
+  background-image:url("/frame.png");
+  width:880px;
+  padding-left:145px;
+  background-repeat:no-repeat;
+  background-position: center;  
+  margin-left: auto;
+  margin-right: auto;;
+
 }
 
 .ingredient {
@@ -322,7 +330,7 @@ async function createNewRecipe() {
 }
 
 .scrollable {
-  background-color: rgb(241, 241, 241);
+  background-color: rgb(196, 196, 196);
   position: absolute;
   bottom: 0%;
   left: 10%;
@@ -332,17 +340,25 @@ async function createNewRecipe() {
   display: flex;
   flex-direction: row;
   z-index: 99;
-  gap: 2px;
+  gap: 40px;
+  background-color: #9290BB;
 }
 
-/* "centered" */
 .dialog {
   position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
   width: 40%;
+  z-index:9999;
+}
+
+.dialog button {
+  width:100%;
+  text-align:center;
+}
+
+.dialogue {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
 }
 
 .die {
