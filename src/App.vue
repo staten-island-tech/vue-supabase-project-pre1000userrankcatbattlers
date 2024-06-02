@@ -2,13 +2,9 @@
 
 <template>
   <nav>
-    <RouterLink to="/home">User Page</RouterLink>
     <RouterLink to="/">Login Page</RouterLink>
   </nav>
-  <h1>
-    cooking <span style="text-decoration: line-through">mama</span>
-    <span style="font-weight: bolder; color: red">YOU.</span>
-  </h1>
+
   <RouterView> </RouterView>
 </template>
 
