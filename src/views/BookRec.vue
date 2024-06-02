@@ -120,7 +120,7 @@ h1 {
   position: absolute;
   right:0%;
   top:0%;
-  color:purple;
+  color:rgb(85, 26, 139);
 }
 
 .bigger {
@@ -205,7 +205,7 @@ h1 {
   min-height: 70px;
   border: none;
   background-color: transparent;
-  color:white;
+  color: rgb(85, 26, 139);
   transition: transform 10s ease-in;
   transform:scale(1);
 }

@@ -266,7 +266,7 @@ function scroll(e:WheelEvent) {
 
 .filtertabs {
   position: absolute;
-  bottom: 26%;
+  bottom: 27.5%;
   left: 10%;
   z-index: 98;
 }
