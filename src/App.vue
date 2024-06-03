@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import {RouterView} from 'vue-router'
+import { RouterView } from "vue-router";
+import { userSessionStore } from "./stores/userAuth";
 </script>
 
 <template>
@@ -17,7 +18,7 @@ import {RouterView} from 'vue-router'
 <style scoped>
 .banner {
   background-color: rgb(189, 189, 189);
-  text-shadow:0 0 6px red;
+  text-shadow: 0 0 6px red;
 }
 .banner:hover {
   transform: matrix(1, 2, 3, 4, 5, 6);
