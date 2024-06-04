@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import { RouterView } from "vue-router";
-import { userSessionStore } from "./stores/userAuth";
 </script>
 
 <template>
-  <nav>
+<!--   <nav>
     <RouterLink to="/home">User Page</RouterLink>
     <RouterLink to="/">Login Page</RouterLink>
-  </nav>
+  </nav> -->
   <h1 class="banner">
     cooking <span style="text-decoration: line-through">mama</span>
     <span style="font-weight: bolder; color: red">YOU.</span>
@@ -16,6 +15,11 @@ import { userSessionStore } from "./stores/userAuth";
 </template>
 
 <style scoped>
+body, html, *{
+  margin: 0;
+  padding: 0;
+}
+
 .banner {
   background-color: rgb(189, 189, 189);
   text-shadow: 0 0 6px red;
@@ -24,3 +28,4 @@ import { userSessionStore } from "./stores/userAuth";
   transform: matrix(1, 2, 3, 4, 5, 6);
 }
 </style>
+./stores/deathcount

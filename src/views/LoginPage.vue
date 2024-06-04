@@ -1,10 +1,8 @@
 <script setup>
 import { router } from "../router/index";
 import { onMounted, ref } from "vue";
-import Account from "../components/Account.vue";
 import Auth from "../components/Auth.vue";
 import { supabase } from "../../utils/supabase";
-import { FunctionsError } from "@supabase/supabase-js";
 const session = ref();
 
 function changePage() {

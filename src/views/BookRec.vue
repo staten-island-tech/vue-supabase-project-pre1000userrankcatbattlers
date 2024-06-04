@@ -62,10 +62,7 @@ async function getingredients() {
   response.data?.forEach((ingredient) => {
     ingredients[ingredient.name] = ingredient as Ingredient;
   });
-  console.log(ingredients);
-
   const response2 = await supabase.from("recipes").select();
-  console.log(response2);
   recipes.value = response2.data as recipe[];
 }
 
@@ -79,11 +76,9 @@ let dishname = "dish";
 let activelistofing: Ref<Ingredient[]> = ref([]);
 let recipenumber = 9;
 async function pageload() {
-  console.log(recipenumber);
   activelistofing.value = [];
   dish = recipes.value[recipenumber];
   dishname = recipes.value[recipenumber]["Dish Name"];
-  console.log(dish);
   const allingredients = recipes.value.map((ind: recipe) => {
     return [
       ind["ingredient 1"],
@@ -100,13 +95,11 @@ async function pageload() {
     if (!key) continue;
     console.log(key);
     activelistofing.value.push(ingredients[key]);
-    console.log(activelistofing.value);
   }
 }
 
 async function change(num: number) {
   recipenumber += num;
-  console.log(recipenumber);
   if (recipenumber > recipes.value.length - 1) recipenumber = 0;
   if (recipenumber < 0) recipenumber = recipes.value.length - 1;
   await pageload();

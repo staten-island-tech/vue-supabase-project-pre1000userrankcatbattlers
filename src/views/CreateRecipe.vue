@@ -93,6 +93,7 @@ const allIngredients = recipes.value
 console.log(allIngredients); //THIS DOES NOT WORK PLEASE MAKE THIS OPERATE AFTER RECIPES EXISTS SO THAT THE ARRAY DOESn'T RETURN NOTHING!!!!! AND SO OUR 3 or was it 4 IF-else statements work.
 
 let userdishname: string = "";
+let userdishimage: string = "";
 function check() {
   const cooking = selectedIngredients.value
     .map((ing) => ing.name)
@@ -116,7 +117,7 @@ function check() {
       } else {
         console.log("you have created a new dish! Check out the recipe book!");
         alert("New Dish!");
-        /*  insertRecipe(); Use this after testing cause I don't want to do the table again*/
+        insertRecipe();
       }
     } else {
       console.log("this is NOT a new recipe");
@@ -129,14 +130,12 @@ function check() {
 async function insertRecipe() {
   //get the user input after the check function
   await supabase.from("recipes").insert({
-    "Dish Name": "CHEESE",
-    "ingredient 1": "cheese",
-    "ingredient 2": "cheese",
-    "ingredient 3": "cheese",
-    "ingredient 4": "cheese",
-    image: null,
-    saturation: 50,
-    thirst: 0,
+    "Dish Name": userdishname,
+    "ingredient 1": selectedoption,
+    "ingredient 2": selectedoption2,
+    "ingredient 3": selectedoption3,
+    "ingredient 4": selectedoption4,
+    "image": userdishimage
   });
 }
 
@@ -149,6 +148,10 @@ function scroll(e: WheelEvent) {
 </script>
 
 <template>
+<RouterLink to="/home" class="x"
+    ><v-icon name="bi-x-square-fill" scale="4"></v-icon
+  ></RouterLink>
+
   <div class="selectedIngredients">
     <div>
       <circleitem
@@ -170,6 +173,16 @@ function scroll(e: WheelEvent) {
     required
     minlength="4"
     maxlength="18"
+    size="10"
+  />
+
+  <label for="dishimage">Input Dish Image URL</label>
+  <input
+    v-model="userdishimage"
+    type="text"
+    id="dishimage"
+    name="name"
+    required
     size="10"
   />
 
@@ -218,30 +231,6 @@ function scroll(e: WheelEvent) {
     </option>
   </select>
 
-  <label for="dishsaturation">How filling will your dish be? (0-100)</label>
-  <input
-    type="number"
-    id="dishsaturation"
-    name="name"
-    required
-    min="0"
-    max="100"
-    size="10"
-  />
-
-  <label for="dishydration"
-    >What is the hydration level of this dish? (0-100)</label
-  >
-  <input
-    type="number"
-    id="dishydration"
-    name="name"
-    required
-    min="0"
-    max="100"
-    size="10"
-  />
-
   <button class="submit" @click="check">Create Recipe</button>
 </template>
 
@@ -267,4 +256,14 @@ function scroll(e: WheelEvent) {
   flex-direction: row;
   justify-content: center;
 }
+
+.x,
+h1 {
+  z-index: 999;
+  position: absolute;
+  right:0%;
+  top:0%;
+  color:rgb(85, 26, 139);
+}
+
 </style>

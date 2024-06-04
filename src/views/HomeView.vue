@@ -4,6 +4,7 @@ import { ref, onMounted, type Ref } from "vue";
 import circleitem from "../components/circleitem.vue";
 import { router } from "@/router";
 import { RouterLink } from "vue-router";
+
 const health: Ref<number> = ref(100);
 const burn = ref(0);
 const loading = ref(true);
@@ -42,6 +43,13 @@ async function getingredients() {
 onMounted(async () => {
   await getingredients();
   getType();
+  const { data, error } = await supabase.auth.getSession();
+  if (error || !data.session) return;
+  const response = (await supabase.from('profiles').select("isdead").eq("id", data.session.user.id)).data
+  if (!response || response.length === 0) return;
+  dead.value = response[0].isdead;
+  console.log(dead.value) 
+  if (dead.value) await die();
 });
 
 const selectedIngredients: Ref<Ingredient[]> = ref([]);
@@ -58,12 +66,39 @@ function remove(ing: Ingredient) {
   selectedIngredients.value.splice(selectedIngredients.value.indexOf(ing), 1);
 }
 
-function die() {
-  localStorage.clear();
+import {suntzuquotes} from '../ts/suntzu'
+
+const dead = ref(false);
+let tianlangchendyingressurection = ref('')
+let suntzuinput = ref('')
+let suntzuquote = ref('')
+
+async function checkmymate_suntzu(){
+  if (suntzuinput.value !== suntzuquote.value) return;
+  dead.value = false;
+  const { data, error } = await supabase.auth.getSession();
+  if (error || !data.session) return;
+  console.log(await supabase.from("profiles").update({isdead:dead.value}).eq("id", data.session.user.id));
+  console.log(dead.value)
+  alert('You can continue cooking.')
+}
+
+import { useUserStore } from "@/stores/localdeathcount";
+const store = useUserStore();
+import { storeToRefs } from "pinia";
+const {localDeaths} = storeToRefs(store)
+
+async function die() {
+  dead.value = true;
   confirm("You got cooked!");
   console.log("OWWW");
-  window.location.reload();
-  return;
+  const { data, error } = await supabase.auth.getSession();
+  if (error || !data.session) return;
+  console.log(await supabase.from("profiles").update({isdead:dead.value}).eq("id", data.session.user.id));
+  suntzuquote.value = suntzuquotes[Math.floor(Math.random() * suntzuquotes.length)];
+  localDeaths.value++
+  console.log(localDeaths)
+
 }
 
 const timeout: Ref<NodeJS.Timeout | null> = ref(null);
@@ -168,73 +203,89 @@ async function signOut() {
 async function createNewRecipe() {
   await router.push("/new");
 }
+
+async function leaderboard(){
+  await router.push("/lead")
+}
+
 </script>
 
 <template>
   <main>
-    <button @click="signOut">log Out</button>
-    <button @click="createNewRecipe">Create New Recipes</button>
-    <dialog ref="dialog" class="dialog" >
-      <div class="dialogue" v-if="cooking2">      
-          <img :src="cooking2.image" alt="" class="dishimage">
-        <h2>thou be cooking {{ cooking2["Dish Name"] }}</h2>
-      </div>
-      <p v-else>you are NOT cooking</p>
-      <button alt="click escape to return" @click="explode">
-          click to return
-        </button>
-    </dialog>
-    <h1>
-      ❤ {{ health < 1 ? 0 : health }}
-      <span style="font-size: small">/100</span>
-      <span v-if="timeout"
-        >YOU ARE BURNING!!! gasoline level:
-        <span style="color: red; font-weight: bolder">{{ burn }}</span></span
-      >
-      <span v-if="burn > 0 && !timeout"
-        >gasoline level: <span style="font-weight: bold">{{ burn }}</span></span
-      >
-    </h1>
-    <RouterLink v-if="!timeout" id="book" to="/book"
-      ><v-icon name="vi-file-type-chef-cookbook" scale="4"></v-icon
-    ></RouterLink>
-    <div class="activeingredients">
-      <div v-for="index in 4" :key="index">
-        <circleitem 
-          v-if="selectedIngredients[index-1]" :name="selectedIngredients[index-1].name" :type="selectedIngredients[index-1].type"
-          :image="selectedIngredients[index-1].image" @click="remove(selectedIngredients[index-1])">
-        </circleitem>
-      </div>
+    <div class="dialogue" v-if="dead">      
+        <h2 v-if="suntzuquote" class="suntzuquote">{{suntzuquote }}</h2>
+        <label>
+          type the Sun Tzu:
+          <input v-model="suntzuinput" type="text" @input="checkmymate_suntzu">
+        </label>
+       
     </div>
-    <button class='start-btn' @click="DoofenshmirtzEvilIncorporated"><v-icon name="gi-small-fire" scale="4"/></button>
-    <div class="ingredients">
-      <div class="filtertabs">
-        <button id="all" @click="filterbar('all')">all</button>
-        <button
-          v-for="atype in actualalltypewithoutdupes"
-          :id="atype"
-          :key="atype"
-          @click="filterbar(atype)"
+    <div v-if="!dead">
+      <button @click="signOut">log Out</button>
+      <button @click="createNewRecipe">Create New Recipes</button>
+      <button @click="leaderboard">Death Leaderboard</button>
+      <dialog ref="dialog" class="dialog" >
+        <div class="dialogue" v-if="cooking2">      
+            <img :src="cooking2.image" alt="" class="dishimage">
+          <h2>thou be cooking {{ cooking2["Dish Name"] }}</h2>
+        </div>
+        <p v-else>you are NOT cooking</p>
+        <button alt="click escape to return" @click="explode">
+            click to return
+          </button>
+      </dialog>
+      <h1>
+        ❤ {{ health < 1 ? 0 : health }}
+        <span style="font-size: small">/100</span>
+        <span v-if="timeout"
+          >YOU ARE BURNING!!! gasoline level:
+          <span style="color: red; font-weight: bolder">{{ burn }}</span></span
         >
-          {{ atype }}
-        </button>
+        <span v-if="burn > 0 && !timeout"
+          >gasoline level: <span style="font-weight: bold">{{ burn }}</span></span
+        >
+      </h1>
+      <RouterLink v-if="!timeout" id="book" to="/book"
+        ><v-icon name="vi-file-type-chef-cookbook" scale="4"></v-icon
+      ></RouterLink>
+      <div class="activeingredients">
+        <div v-for="index in 4" :key="index">
+          <circleitem 
+            v-if="selectedIngredients[index-1]" :name="selectedIngredients[index-1].name" :type="selectedIngredients[index-1].type"
+            :image="selectedIngredients[index-1].image" @click="remove(selectedIngredients[index-1])">
+          </circleitem>
+        </div>
       </div>
-      <div class="scrollable" ref="scrollable" @wheel="scroll">
-        <circleitem
-          v-for="ing in ingredientsfiltered"
-          :name="ing.name"
-          :type="ing.type"
-          :image="ing.image"
-          class="ingredient"
-          @click="add(ing)"
-        />
-        <button @click="die" class="die" title="free rewards!!">
+      <button class='start-btn' @click="DoofenshmirtzEvilIncorporated"><v-icon name="gi-small-fire" scale="4"/></button>
+      <div class="ingredients">
+        <div class="filtertabs">
+          <button id="all" @click="filterbar('all')">all</button>
+          <button
+            v-for="atype in actualalltypewithoutdupes"
+            :id="atype"
+            :key="atype"
+            @click="filterbar(atype)"
+          >
+            {{ atype }}
+          </button>
+        </div>
+        <div class="scrollable" ref="scrollable" @wheel="scroll">
           <circleitem
-            name="The Escape Plan"
-            type="tool"
-            image="https://i.imgflip.com/494yn4.jpg"
-          ></circleitem>
-        </button>
+            v-for="ing in ingredientsfiltered"
+            :name="ing.name"
+            :type="ing.type"
+            :image="ing.image"
+            class="ingredient"
+            @click="add(ing)"
+          />
+          <button @click="die" class="die" title="free rewards!!">
+            <circleitem
+              name="The Escape Plan"
+              type="tool"
+              image="https://i.imgflip.com/494yn4.jpg"
+            ></circleitem>
+          </button>
+        </div>
       </div>
     </div>
     <video id="background-video" src="/seal/catcook.mp4" autoplay loop muted type="video/mp4" ></video>
@@ -248,6 +299,10 @@ body{
   background-attachment: fixed;
   background-repeat: no-repeat;
   background-size: cover;
+}
+
+.suntzuquote{
+  user-select: none
 }
 
 .dishimage{

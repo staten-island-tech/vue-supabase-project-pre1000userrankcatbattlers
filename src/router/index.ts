@@ -50,6 +50,11 @@ export const router = createRouter({
       name: "new",
       component: () => import("../views/CreateRecipe.vue"),
     },
+    {
+      path: "/lead",
+      name: "lead",
+      component: () => import("../views/TianlangchenView.vue"),
+    },
   ],
 });
 
