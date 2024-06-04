@@ -1,7 +1,5 @@
 <template>
-  <RouterLink to="/home" class="x"
-    ><v-icon name="bi-x-square-fill" scale="4"></v-icon
-  ></RouterLink>
+  <RouterLink to="/home" class="x"><v-icon name="bi-x-square-fill" scale="4"></v-icon></RouterLink>
 
   <div class="bigger">
     <div class="big">
@@ -11,12 +9,7 @@
 
       <div class="book">
         <div class="page page1">
-          <img
-            class="dishimage"
-            v-if="dish"
-            :src="dish.image"
-            :alt="dishname"
-          />
+          <img class="dishimage" v-if="dish" :src="dish.image" :alt="dishname" />
           <h2>{{ dishname }}</h2>
         </div>
 
@@ -38,7 +31,10 @@
 <script setup lang="ts">
 import { supabase } from "../../utils/supabase";
 import { ref, onMounted, type Ref } from "vue";
-
+import { useUserStore } from "@/stores/localdeathcount";
+const store = useUserStore();
+import { storeToRefs } from "pinia";
+const { aretheyintheleaderboardview } = storeToRefs(store);
 type Ingredient = {
   name: string;
   image: string;
@@ -67,6 +63,7 @@ async function getingredients() {
 }
 
 onMounted(async () => {
+  aretheyintheleaderboardview.value = false;
   await getingredients();
   await pageload();
 });
@@ -80,12 +77,7 @@ async function pageload() {
   dish = recipes.value[recipenumber];
   dishname = recipes.value[recipenumber]["Dish Name"];
   const allingredients = recipes.value.map((ind: recipe) => {
-    return [
-      ind["ingredient 1"],
-      ind["ingredient 2"],
-      ind["ingredient 3"],
-      ind["ingredient 4"],
-    ];
+    return [ind["ingredient 1"], ind["ingredient 2"], ind["ingredient 3"], ind["ingredient 4"]];
   });
   console.log(allingredients[recipenumber]); //rice, egg, oil, salt
   console.log(ingredients["rice"]); //object with name image and type of the ingredient
@@ -115,9 +107,9 @@ body {
 h1 {
   z-index: 999;
   position: absolute;
-  right:0%;
-  top:0%;
-  color:rgb(85, 26, 139);
+  right: 0%;
+  top: 0%;
+  color: rgb(85, 26, 139);
 }
 
 .bigger {

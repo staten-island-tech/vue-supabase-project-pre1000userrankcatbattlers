@@ -2,6 +2,10 @@
 import { supabase } from "../../utils/supabase";
 import { ref, onMounted, type Ref } from "vue";
 import circleitem from "../components/circleitem.vue";
+import { useUserStore } from "@/stores/localdeathcount";
+const store = useUserStore();
+import { storeToRefs } from "pinia";
+const { aretheyintheleaderboardview } = storeToRefs(store);
 
 type Ingredient = {
   name: string;
@@ -40,12 +44,7 @@ async function getingredients() {
   console.log(recipes.value);
   recipeListName = recipes.value.map((dish) => dish["Dish Name"]);
   recipeList = recipes.value.map((dish: recipe) =>
-    [
-      dish["ingredient 1"],
-      dish["ingredient 2"],
-      dish["ingredient 3"],
-      dish["ingredient 4"],
-    ]
+    [dish["ingredient 1"], dish["ingredient 2"], dish["ingredient 3"], dish["ingredient 4"]]
       .sort()
       .filter((ing) => ing)
       .join(";")
@@ -57,6 +56,7 @@ async function getingredients() {
 }
 
 onMounted(async () => {
+  aretheyintheleaderboardview.value = false;
   await getingredients();
 });
 
@@ -69,9 +69,7 @@ let selectedoption4 = "Cow head";
 function add(ingname: string) {
   console.log(ingname);
   if (selectedIngredients.value.length >= 4) return;
-  let pushingredient = ingredients.value.filter(
-    (ing: Ingredient) => ing.name == ingname
-  );
+  let pushingredient = ingredients.value.filter((ing: Ingredient) => ing.name == ingname);
   console.log(pushingredient);
   selectedIngredients.value.push(pushingredient[0]);
   console.log(selectedIngredients);
@@ -83,12 +81,7 @@ function remove(ing: Ingredient) {
 }
 
 const allIngredients = recipes.value
-  .flatMap((dish) => [
-    dish["ingredient 1"],
-    dish["ingredient 2"],
-    dish["ingredient 3"],
-    dish["ingredient 4"],
-  ])
+  .flatMap((dish) => [dish["ingredient 1"], dish["ingredient 2"], dish["ingredient 3"], dish["ingredient 4"]])
   .filter((ingredient) => ingredient !== null);
 console.log(allIngredients); //THIS DOES NOT WORK PLEASE MAKE THIS OPERATE AFTER RECIPES EXISTS SO THAT THE ARRAY DOESn'T RETURN NOTHING!!!!! AND SO OUR 3 or was it 4 IF-else statements work.
 
@@ -135,7 +128,7 @@ async function insertRecipe() {
     "ingredient 2": selectedoption2,
     "ingredient 3": selectedoption3,
     "ingredient 4": selectedoption4,
-    "image": userdishimage
+    image: userdishimage,
   });
 }
 
@@ -148,84 +141,38 @@ function scroll(e: WheelEvent) {
 </script>
 
 <template>
-<RouterLink to="/home" class="x"
-    ><v-icon name="bi-x-square-fill" scale="4"></v-icon
-  ></RouterLink>
+  <RouterLink to="/home" class="x"><v-icon name="bi-x-square-fill" scale="4"></v-icon></RouterLink>
 
   <div class="selectedIngredients">
-    <div>
-      <circleitem
-        v-for="ing in selectedIngredients"
-        :name="ing.name"
-        :type="ing.type"
-        :image="ing.image"
-        @click="remove(ing)"
-      />
-    </div>
+    <circleitem v-for="ing in selectedIngredients" :name="ing.name" :type="ing.type" :image="ing.image" @click="remove(ing)" />
   </div>
 
   <label for="dishname">Name your dish!</label>
-  <input
-    v-model="userdishname"
-    type="text"
-    id="dishname"
-    name="name"
-    required
-    minlength="4"
-    maxlength="18"
-    size="10"
-  />
+  <input v-model="userdishname" type="text" id="dishname" name="name" required minlength="4" maxlength="18" size="10" />
 
   <label for="dishimage">Input Dish Image URL</label>
-  <input
-    v-model="userdishimage"
-    type="text"
-    id="dishimage"
-    name="name"
-    required
-    size="10"
-  />
+  <input v-model="userdishimage" type="text" id="dishimage" name="name" required size="10" />
 
   <label for="ingredient1">Choose Ingredient 1</label>
-  <select
-    name="One"
-    id="ingredient1"
-    v-model="selectedoption"
-    @change="add(selectedoption)"
-  >
+  <select name="One" id="ingredient1" v-model="selectedoption" @change="add(selectedoption)">
     <option v-for="ing in ingredients" :value="ing.name">
       {{ ing.name }}
     </option>
   </select>
   <label for="ingredient2">Choose Ingredient 2</label>
-  <select
-    name="Two"
-    id="ingredient2"
-    v-model="selectedoption2"
-    @change="add(selectedoption2)"
-  >
+  <select name="Two" id="ingredient2" v-model="selectedoption2" @change="add(selectedoption2)">
     <option v-for="ing in ingredients" :value="ing.name">
       {{ ing.name }}
     </option>
   </select>
   <label for="ingredient3">Choose Ingredient 3</label>
-  <select
-    name="Three"
-    id="ingredient3"
-    v-model="selectedoption3"
-    @change="add(selectedoption3)"
-  >
+  <select name="Three" id="ingredient3" v-model="selectedoption3" @change="add(selectedoption3)">
     <option v-for="ing in ingredients" :value="ing.name">
       {{ ing.name }}
     </option>
   </select>
   <label for="ingredient4">Choose Ingredient 4</label>
-  <select
-    name="Four"
-    id="ingredient4"
-    v-model="selectedoption4"
-    @change="add(selectedoption4)"
-  >
+  <select name="Four" id="ingredient4" v-model="selectedoption4" @change="add(selectedoption4)">
     <option v-for="ing in ingredients" :value="ing.name">
       {{ ing.name }}
     </option>
@@ -253,6 +200,7 @@ function scroll(e: WheelEvent) {
   height: 220px;
   background-color: blueviolet;
   display: flex;
+  flex-wrap: wrap;
   flex-direction: row;
   justify-content: center;
 }
@@ -261,9 +209,8 @@ function scroll(e: WheelEvent) {
 h1 {
   z-index: 999;
   position: absolute;
-  right:0%;
-  top:0%;
-  color:rgb(85, 26, 139);
+  right: 0%;
+  top: 0%;
+  color: rgb(85, 26, 139);
 }
-
 </style>
