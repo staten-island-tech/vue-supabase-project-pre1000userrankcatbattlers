@@ -7,12 +7,14 @@ const email = ref("");
 const password = ref("");
 const username = ref("");
 
+import router from "@/router";
 
 async function handleLogin() {
   const { data, error } = await supabase.auth.signInWithPassword({
     email: email.value,
     password: password.value,
   });
+  await router.push("/home")
 }
 
 async function handleSignup() {
@@ -36,12 +38,13 @@ async function handleSignup() {
   } finally {
     loading.value = false;
   }
+  await router.push("/home");
 }
 
 let loginpage = ref(true);
 
 function movetosignup(){
-   loginpage.value = false;
+  loginpage.value = false;
 }
 
 function movetologin(){
@@ -87,7 +90,7 @@ function movetologin(){
         <input
           type="submit"
           class="button block"
-          @click="handleSignup(); movetologin();"
+          @click="handleSignup; movetologin;"
           :value="loading ? 'Loading' : 'Sign Up'"
           :disabled="loading"
           v-if="!loginpage"

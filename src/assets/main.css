@@ -1,1 +1,7 @@
 @import './base.css';
+
+body{
+  background: #392947;
+  background-size: 100vw 100vh;
+  background-repeat:none;
+}

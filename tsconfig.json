@@ -18,10 +18,10 @@
     "moduleResolution":"node",
     "paths": {
       "@/*": [
-       "./*"
+      "./*"
       ]
-     }
-   },
+    }
+  },
   "references": [
     {
       "path": "./tsconfig.node.json"

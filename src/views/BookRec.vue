@@ -1,9 +1,9 @@
 <template>
   <RouterLink to="/home" class="x"><v-icon name="bi-x-square-fill" scale="4"></v-icon></RouterLink>
-
+  <h2 class="Nvai">** Warning! Skill Based Navigation **</h2>
   <div class="bigger">
     <div class="big">
-      <button class="btn minus" @click="change(-1)">
+      <button class="btn minus" @click="attempt(-1)">
         <v-icon name="md-arrowcircleleft-round" scale="4" />
       </button>
 
@@ -21,11 +21,12 @@
         </div>
       </div>
 
-      <button class="btn plus" @click="change(1)">
+      <button class="btn plus" @click="attempt(1)">
         <v-icon name="md-arrowcircleright-round" scale="4" />
       </button>
     </div>
   </div>
+  <qte v-if="isAttempt" @win="win" @lose="lose" class="qte"/>
 </template>
 
 <script setup lang="ts">
@@ -90,6 +91,29 @@ async function pageload() {
   }
 }
 
+// @ts-ignore; ts stop being a hater‼
+import qte from "../components/qte.vue"
+const isAttempt = ref(false);
+const nav = ref(0);
+function attempt(num:number) {
+  if (isAttempt.value) return;
+  isAttempt.value = true;
+  nav.value = num;
+}
+
+function win() {
+  isAttempt.value = false;
+  change(nav.value);
+  nav.value=0;
+}
+
+async function lose() {
+  isAttempt.value = false;
+  alert("YOU FAILED")
+  recipenumber = Math.floor(Math.random() * recipes.value.length);
+  await pageload();
+}
+
 async function change(num: number) {
   recipenumber += num;
   if (recipenumber > recipes.value.length - 1) recipenumber = 0;
@@ -99,6 +123,11 @@ async function change(num: number) {
 </script>
 
 <style scoped>
+
+.Nvai{
+  color:white;
+}
+
 body {
   background-color: pink;
 }
@@ -108,8 +137,8 @@ h1 {
   z-index: 999;
   position: absolute;
   right: 0%;
-  top: 0%;
-  color: rgb(85, 26, 139);
+  top: 5%;
+  color: #BAA7FF;
 }
 
 .bigger {
@@ -125,7 +154,7 @@ h1 {
   /* that centers the buttons */
   margin-top: 0;
   position: absolute;
-  top: 0%;
+  top: -5%;
   left: 5%;
 }
 
@@ -194,7 +223,7 @@ h1 {
   min-height: 70px;
   border: none;
   background-color: transparent;
-  color: rgb(85, 26, 139);
+  color: #BAA7FF;
   transition: transform 10s ease-in;
   transform: scale(1);
 }
@@ -209,5 +238,15 @@ h1 {
 
 .minus {
   transform-origin: left;
+}
+
+.qte {
+  position:absolute;
+  width:100vw;
+  height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content: center;
+  z-index:9999;
 }
 </style>

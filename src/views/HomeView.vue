@@ -182,9 +182,21 @@ function scroll(e: WheelEvent) {
   scrollable.value.scrollLeft += e.deltaY;
 }
 
+async function sendSupabaseDeath() {
+  const { data, error } = await supabase.auth.getSession();
+  if (error || !data.session) return;
+  const existingdeaths = (await supabase.from("profiles").select("deaths").eq("id", data.session.user.id)).data;
+  if (existingdeaths == null) return;
+  let deathnote = existingdeaths[0].deaths + localDeaths.value;
+  console.log(deathnote);
+  await supabase.from("profiles").update({ deaths: deathnote }).eq("id", data.session.user.id);
+  localDeaths.value = 0;
+}
+
 async function signOut() {
   try {
     loading.value = true;
+    await sendSupabaseDeath();
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
   } catch (error) {
@@ -226,7 +238,7 @@ async function leaderboard() {
         <p v-else>you are NOT cooking</p>
         <button alt="click escape to return" @click="explode">click to return</button>
       </dialog>
-      <h1>
+      <h2>
         ❤ {{ health < 1 ? 0 : health }}
         <span style="font-size: small">/100</span>
         <span v-if="timeout"
@@ -235,7 +247,7 @@ async function leaderboard() {
         <span v-if="burn > 0 && !timeout"
           >gasoline level: <span style="font-weight: bold">{{ burn }}</span></span
         >
-      </h1>
+      </h2>
       <RouterLink v-if="!timeout" id="book" to="/book"><v-icon name="vi-file-type-chef-cookbook" scale="4"></v-icon></RouterLink>
       <div class="activeingredients">
         <div v-for="index in 4" :key="index">
@@ -265,15 +277,14 @@ async function leaderboard() {
         </div>
       </div>
     </div>
-    <video id="background-video" src="/seal/catcook.mp4" autoplay loop muted type="video/mp4"></video>
+<div id="background-video"><video src="/seal/catty.mp4" autoplay loop muted></video></div> 
   </main>
 </template>
 
 <style scoped>
-body {
-  background-attachment: fixed;
-  background-repeat: no-repeat;
-  background-size: cover;
+
+h2{
+  color:white;
 }
 
 .suntzuquote {
@@ -291,11 +302,11 @@ body {
   width: 110vw;
   height: 110vh;
   position: fixed;
-  right: 0;
+  right: -35%;
   pointer-events: none;
-  filter: opacity(0.1) blur(5px) contrast(1000) brightness(10) hue-rotate(180deg);
   bottom: 0;
-  z-index: 999;
+  z-index: -1;
+  
 }
 
 .start-btn {
@@ -304,14 +315,14 @@ body {
   margin: 5px;
   font-weight: bold;
   padding: 10px 10px 10px 10px;
-  background-color: rgb(0, 68, 156);
+  background-color: rgb(255, 149, 88);
   text-shadow: -1px -1px black, 1px 1px white;
-  color: white;
+  color: red;
   -webkit-border-radius: 7px;
   -moz-border-radius: 7px;
   -o-border-radius: 7px;
   border-radius: 7px;
-  border-color: rgb(255, 208, 1);
+  border-color: rgb(255, 234, 142);
   box-shadow: 0 0.2em gray;
   cursor: pointer;
   margin: 0 auto;
@@ -320,6 +331,7 @@ body {
 }
 
 .activeingredients {
+  z-index: 3;
   height: 220px;
   display: flex;
   flex-direction: row;
@@ -340,10 +352,16 @@ body {
 }
 
 .filtertabs {
-  position: absolute;
-  bottom: 27.5%;
-  left: 10%;
   z-index: 98;
+  display:flex;
+  flex-direction: column;
+  width:min-content;
+  position:absolute;
+  left:2%;
+  bottom:1%;
+}
+.filtertabs button {
+  font-size: 25px;
 }
 
 #book {
@@ -352,15 +370,15 @@ body {
   position: absolute;
   top: 0%;
   right: 0%;
-  background-color: rgb(85, 26, 139);
+  background-color: #5B527D;
   display: flex;
   justify-content: center;
   align-items: center;
   border-top-left-radius: 100rem;
+  z-index: 9999;
 }
 
 .scrollable {
-  background-color: rgb(196, 196, 196);
   position: absolute;
   bottom: 0%;
   left: 10%;
@@ -371,7 +389,9 @@ body {
   flex-direction: row;
   z-index: 99;
   gap: 40px;
-  background-color: #9290bb;
+  padding: 0 10px;
+  background-color: #5B527D;
+  box-shadow: inset  0px 0px 10px 0px;
 }
 
 .dialog {

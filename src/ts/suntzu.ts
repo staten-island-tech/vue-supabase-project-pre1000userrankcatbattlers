@@ -7,7 +7,7 @@ export const suntzuquotes = [
     "Strategy without tactics is the slowest route to victory. Tactics without strategy is the noise before defeat.",
     "All warfare is based on deception.",
     "If fighting is sure to result in victory, then you must fight.",
-    "One defends when his strength is inadaquate, he attacks when it is abundant.",
+    "One defends when his strength is inadequate, he attacks when it is abundant.",
     "The quality of decision is like the well-timed swoop of a falcon which enables it to strike and destroy its victim.",
     "When the enemy is at ease, be able to weary him; when well fed, to starve him; when at rest, to make him move. Appear at places to which he must hasten; move swiftly where he does not expect you.",
     "If you know your enemy and you know yourself you need not fear the results of a hundred battles. If you know yourself but not the enemy for every victory gained you will also suffer a defeat. If you know neither the enemy nor yourself you will succumb in every battle.",

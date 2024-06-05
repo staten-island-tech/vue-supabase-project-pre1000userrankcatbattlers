@@ -146,7 +146,7 @@ function scroll(e: WheelEvent) {
   <div class="selectedIngredients">
     <circleitem v-for="ing in selectedIngredients" :name="ing.name" :type="ing.type" :image="ing.image" @click="remove(ing)" />
   </div>
-
+<div class="forming">
   <label for="dishname">Name your dish!</label>
   <input v-model="userdishname" type="text" id="dishname" name="name" required minlength="4" maxlength="18" size="10" />
 
@@ -179,9 +179,26 @@ function scroll(e: WheelEvent) {
   </select>
 
   <button class="submit" @click="check">Create Recipe</button>
+</div>
 </template>
 
 <style scoped>
+label{
+  color:white;
+}
+
+.forming{
+  display: flex;
+  flex-direction: column;
+  width: 25vw;
+  margin: auto;
+  padding-top: 10px
+}
+
+.submit{
+  margin:10px;
+}
+
 .scrollable {
   background-color: rgb(241, 241, 241);
   position: absolute;
@@ -197,12 +214,18 @@ function scroll(e: WheelEvent) {
 }
 
 .selectedIngredients {
+  z-index: 3;
   height: 220px;
-  background-color: blueviolet;
   display: flex;
-  flex-wrap: wrap;
   flex-direction: row;
-  justify-content: center;
+  gap: 46px;
+  background-image: url("/frame.png");
+  width: 880px;
+  padding-left: 145px;
+  background-repeat: no-repeat;
+  background-position: center;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .x,
@@ -210,7 +233,7 @@ h1 {
   z-index: 999;
   position: absolute;
   right: 0%;
-  top: 0%;
-  color: rgb(85, 26, 139);
+  top: 5%;
+  color: #BAA7FF;
 }
 </style>
