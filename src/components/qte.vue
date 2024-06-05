@@ -1,8 +1,7 @@
 <template>
-  <div class="qte">
-    <button @click="stop">STOP</button>
-    <p>click STOP when the meter is <span class="num">{{ target }}%</span> full</p>
-    <div>
+  <div class="qte" @click="stop">
+    <p>click when the meter is <span class="num">{{ target }}%</span> full</p>
+    <div class="bars">
       <div class="indicator">
         <span class="bar" :style="{width:target-2+'%'}"></span>
         <span class="bar good" :style="{width:4+'%'}"></span>
@@ -23,12 +22,12 @@ onMounted(() => {
   const speed = Math.ceil(Math.random() * 36) +19;
   target.value = Math.ceil(Math.random() * 21) +14;
   timer = setInterval(() => {
-    progress.value++;
+    progress.value+=0.1;
     if(progress.value > 100) {
-      emit('lose');
+      // emit('lose');
       return;
     }
-  }, speed)
+  }, speed/10)
 })
 
 function stop() {
@@ -44,14 +43,7 @@ function stop() {
 .qte {
   display:flex;
   flex-direction:column;
-  border:2px solid black;
-  background-color:grey;
-}
-
-.qte button {
-  height:8rem;
-  width:100%;
-  font-size: large;
+  background-color:lightgray;
 }
 
 .bar {
@@ -60,8 +52,8 @@ function stop() {
   background-color:red;
 }
 
-.indicator * {
-  height:10px;
+.bars {
+  width:100vw;
 }
 
 .bar.active {
@@ -81,6 +73,7 @@ function stop() {
 .indicator {
   display:flex;
   flex-direction:row;
+  height:10px;
 }
 
 .num {
