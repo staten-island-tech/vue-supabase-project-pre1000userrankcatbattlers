@@ -21,12 +21,14 @@ const progress = ref(0);
 const target = ref(0);
 let timer: NodeJS.Timeout | undefined;
 onMounted(() => {
-  const speed = Math.ceil(Math.random() * 36) + 19;
+  const speed = Math.ceil(Math.random() * 36) + 24;
+  let speeded = Math.random() * 0.2 + 0.1;
   target.value = Math.ceil(Math.random() * 71) + 19;
   timer = setInterval(() => {
-    progress.value += 0.1;
+    progress.value += speeded;
+    speeded *= 1.01;
     if (progress.value > 100) {
-      // emit('lose');
+      emit("lose");
       return;
     }
   }, speed / 10);
@@ -37,7 +39,7 @@ function stop() {
   clearInterval(timer);
   timer = undefined;
   const off = Math.abs(progress.value - target.value);
-  emit(off <= 2.5 ? "win" : "lose");
+  emit(off <= 3 ? "win" : "lose");
 }
 </script>
 

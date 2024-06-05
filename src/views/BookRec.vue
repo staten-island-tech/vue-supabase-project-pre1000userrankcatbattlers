@@ -19,14 +19,14 @@
           </div>
         </div>
       </div>
-      
+
       <button class="btn plus" @click="attempt(1)">
         <v-icon name="md-arrowcircleright-round" scale="4" />
       </button>
     </div>
   </div>
   <qte v-if="isAttempt" @win="win" @lose="lose" class="qte" />
-  <h2 class="Nvai2">page {{ recipenumber+1 }} out of {{recipes.length}} </h2>
+  <h2 class="Nvai2">page {{ recipenumber + 1 }} out of {{ recipes.length }}</h2>
 </template>
 
 <script setup lang="ts">
@@ -127,7 +127,6 @@ async function change(num: number) {
 
 .Nvai2 {
   color: white;
-
 }
 
 body {
@@ -210,7 +209,8 @@ h1 {
   grid-column: 2/2;
   position: relative;
   max-width: 50%;
-  left: 5vw;
+  left: 2.5vw;
+  top: 18vh;
 }
 
 .ingredient {

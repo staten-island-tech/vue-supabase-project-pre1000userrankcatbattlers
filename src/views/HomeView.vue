@@ -42,7 +42,7 @@ async function getingredients() {
 }
 
 onMounted(async () => {
-  isLogginPage.value = false
+  isLogginPage.value = false;
   aretheyintheleaderboardview.value = false;
   await getingredients();
   getType();
@@ -53,7 +53,6 @@ onMounted(async () => {
   dead.value = response[0].isdead;
   if (dead.value) await die();
 });
-
 
 const selectedIngredients: Ref<Ingredient[]> = ref([]);
 
@@ -87,8 +86,8 @@ async function checkmymate_suntzu() {
 async function die() {
   health.value = 0;
   dead.value = true;
-  burn.value = burn.value*2;
-  if(timeout.value) {
+  burn.value = burn.value * 2;
+  if (timeout.value) {
     clearTimeout(timeout.value);
     timeout.value = null;
   }
@@ -121,7 +120,7 @@ async function DoofenshmirtzEvilIncorporated() {
       if (health.value < 1 && !dead.value) {
         die();
         return;
-      } 
+      }
 
       health.value -= Math.ceil(Math.random() * burn.value);
       timeout.value = setTimeout(burning, 100);
@@ -141,14 +140,13 @@ async function DoofenshmirtzEvilIncorporated() {
 
   health.value -= Math.ceil(Math.random() * burn.value);
   if (burn.value > 0) burn.value--;
-  if (health.value < 1) await die()
+  if (health.value < 1) await die();
 }
 
 function explode() {
   if (!dialog.value) return;
   dialog.value.close();
   selectedIngredients.value = [];
-  
 }
 const actualalltypewithoutdupes: Ref<string[]> = ref([]);
 //Getting types for filtering purposes
@@ -215,8 +213,8 @@ async function leaderboard() {
 <template>
   <main>
     <div class="dialogue" v-if="dead">
-
       <h2 v-if="suntzuquote" class="suntzuquote">{{ suntzuquote }}</h2>
+      <h3>- sun tzu</h3>
       <label>
         type the Sun Tzu:
         <input v-model="suntzuinput" type="text" @input="checkmymate_suntzu" />
@@ -236,7 +234,7 @@ async function leaderboard() {
       </dialog>
       <h2>
         ❤ {{ health < 1 ? 0 : health }}
-        <span style="font-size: small">/100   </span>
+        <span style="font-size: small">/100 </span>
         <span v-if="timeout"
           >YOU ARE BURNING!!! gasoline level: <span style="color: red; font-weight: bolder">{{ burn }}</span></span
         >
@@ -267,23 +265,22 @@ async function leaderboard() {
         </div>
         <div class="scrollable" ref="scrollable" @wheel="scroll">
           <circleitem v-for="ing in ingredientsfiltered" :name="ing.name" :type="ing.type" :image="ing.image" class="ingredient" @click="add(ing)" />
-          <button @click="die" class="die" title="free rewards!!">
-            <circleitem name="The Escape Plan" type="tool" image="https://i.imgflip.com/494yn4.jpg"></circleitem>
-          </button>
+          <circleitem name="The Escape Plan" type="tool" image="https://i.imgflip.com/494yn4.jpg" @click="die" class="die" title="free rewards!!"></circleitem>
         </div>
       </div>
     </div>
-<div id="background-video"><video src="/seal/catty.mp4" autoplay loop muted></video></div> 
+    <div id="background-video"><video src="/seal/catty.mp4" autoplay loop muted></video></div>
   </main>
 </template>
 
 <style scoped>
-
-h2{
-  color:white;
+h2,
+h3,
+label {
+  color: white;
 }
 
-dialog h2{
+dialog h2 {
   color: black;
 }
 
@@ -306,7 +303,6 @@ dialog h2{
   pointer-events: none;
   bottom: 0;
   z-index: -1;
-  
 }
 
 .start-btn {
@@ -353,12 +349,12 @@ dialog h2{
 
 .filtertabs {
   z-index: 98;
-  display:flex;
+  display: flex;
   flex-direction: column;
-  width:min-content;
-  position:absolute;
-  left:2%;
-  bottom:1%;
+  width: min-content;
+  position: absolute;
+  left: 2%;
+  bottom: 1%;
 }
 .filtertabs button {
   font-size: 25px;
@@ -370,7 +366,7 @@ dialog h2{
   position: absolute;
   top: 0%;
   right: 0%;
-  background-color: #5B527D;
+  background-color: #5b527d;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -390,8 +386,8 @@ dialog h2{
   z-index: 99;
   gap: 40px;
   padding: 0 10px;
-  background-color: #5B527D;
-  box-shadow: inset  0px 0px 10px 0px;
+  background-color: #5b527d;
+  box-shadow: inset 0px 0px 10px 0px;
 }
 
 .dialog {

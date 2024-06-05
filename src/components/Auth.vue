@@ -22,12 +22,14 @@ async function handleLogin() {
 }
 
 async function handleSignup() {
+  console.log("meow");
   try {
     loading.value = true;
     const { data, error } = await supabase.auth.signUp({
       email: email.value,
       password: password.value,
     });
+    console.log(data, error);
     await supabase.from("profiles").update({ username: username.value }).eq("id", data.user.id);
 
     if (error) throw error;
@@ -66,17 +68,7 @@ function movetologin() {
           <input class="inputField" required type="password" placeholder="Password" v-model="password" />
         </div>
         <div>
-          <input
-            type="submit"
-            class="button block log"
-            @click="
-              handleSignup;
-              movetologin;
-            "
-            :value="loading ? 'Loading' : 'Sign Up'"
-            :disabled="loading"
-            v-if="!loginpage"
-          />
+          <input type="submit" class="button block log" @click="handleSignup" :value="loading ? 'Loading' : 'Sign Up'" :disabled="loading" v-if="!loginpage" />
         </div>
         <div>
           <input type="submit" class="button block" @click="handleLogin" :value="loading ? 'Loading' : 'Login'" :disabled="loading" v-if="loginpage" />
