@@ -14,7 +14,7 @@ async function handleLogin() {
     email: email.value,
     password: password.value,
   });
-  await router.push("/home")
+  await router.push("/home");
 }
 
 async function handleSignup() {
@@ -27,13 +27,13 @@ async function handleSignup() {
       password: password.value,
     });
     console.log(data); //{user: null, session: null}
-    console.log(await supabase.from("profiles").update({username:username.value}).eq("id", data.user.id));
-    
+    console.log(await supabase.from("profiles").update({ username: username.value }).eq("id", data.user.id));
+
     if (error) throw error;
   } catch (error) {
     if (error instanceof Error) {
       alert(error.message);
-      console.log(error)
+      console.log(error);
     }
   } finally {
     loading.value = false;
@@ -43,93 +43,89 @@ async function handleSignup() {
 
 let loginpage = ref(true);
 
-function movetosignup(){
+function movetosignup() {
   loginpage.value = false;
 }
 
-function movetologin(){
+function movetologin() {
   loginpage.value = true;
 }
-
-
 </script>
 
 <template>
   <div class="container1">
-  <form class="row flex-center flex" @submit.prevent="">
-    <div class="col-6 form-widget">
-      <div>
-        <input
-          class="inputField"
-          required
-          type="email"
-          placeholder="Your email"
-          v-model="email"
-        />
+    <form class="row flex-center flex" @submit.prevent="">
+      <div class="col-6 form-widget">
+        <div>
+          <input class="inputField" required type="email" placeholder="Your email" v-model="email" />
+        </div>
+        <div>
+          <input class="inputField" required type="username" placeholder="Username" v-model="username" v-if="!loginpage" />
+        </div>
+        <div>
+          <input class="inputField" required type="password" placeholder="Password" v-model="password" />
+        </div>
+        <div>
+          <input
+            type="submit"
+            class="button block log"
+            @click="
+              handleSignup;
+              movetologin;
+            "
+            :value="loading ? 'Loading' : 'Sign Up'"
+            :disabled="loading"
+            v-if="!loginpage"
+          />
+        </div>
+        <div>
+          <input type="submit" class="button block" @click="handleLogin" :value="loading ? 'Loading' : 'Login'" :disabled="loading" v-if="loginpage" />
+        </div>
       </div>
-      <div>
-        <input
-          class="inputField"
-          required
-          type="username"
-          placeholder="Username"
-          v-model="username"
-          v-if="!loginpage"
-        />
-      </div>
-      <div>
-        <input
-          class="inputField"
-          required
-          type="password"
-          placeholder="Password"
-          v-model="password"
-        />
-      </div>
-      <div>
-        <input
-          type="submit"
-          class="button block"
-          @click="handleSignup; movetologin;"
-          :value="loading ? 'Loading' : 'Sign Up'"
-          :disabled="loading"
-          v-if="!loginpage"
-        />
-      </div>
-      <div>
-        <input
-          type="submit"
-          class="button block"
-          @click="handleLogin"
-          :value="loading ? 'Loading' : 'Login'"
-          :disabled="loading"
-          v-if="loginpage"
-        />
-      </div>
-    </div>
-  </form>
-</div>
+    </form>
+    <hr />
+  </div>
   <div class="container2">
     <div>
-        <input
-          type="submit"
-          class="button block"
-          @click="movetologin"
-          :value="loading ? 'Loading' : 'Already have an account? Login'"
-          :disabled="loading"
-          v-if="!loginpage"
-        />
-      </div>
-      <div>
-        <input
-          type="submit"
-          class="button block"
-          @click="movetosignup"
-          :value="loading ? 'Loading' : 'Create new account'"
-          :disabled="loading"
-          v-if="loginpage"
-        />
-      </div>
-
+      <input
+        type="submit"
+        class="button block log"
+        @click="movetologin"
+        :value="loading ? 'Loading' : 'Already have an account? Login'"
+        :disabled="loading"
+        v-if="!loginpage"
+      />
+    </div>
+    <div>
+      <input
+        type="submit"
+        class="button block"
+        @click="movetosignup"
+        :value="loading ? 'Loading' : 'Create new account'"
+        :disabled="loading"
+        v-if="loginpage"
+      />
+    </div>
   </div>
 </template>
+
+<style scoped>
+* {
+  font-size: 20px;
+  margin-top: 9px;
+  text-align: center;
+}
+
+.button {
+  margin: 0 auto;
+  display: block;
+}
+
+hr {
+  margin-top: 45px;
+}
+
+.log {
+  margin-top: 20px;
+}
+</style>

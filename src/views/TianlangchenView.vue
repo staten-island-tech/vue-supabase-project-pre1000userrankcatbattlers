@@ -1,7 +1,7 @@
 <template>
   <RouterLink to="/home" class="x"><v-icon name="bi-x-square-fill" scale="4"></v-icon></RouterLink>
   <div class="page">
-  <div class="board">
+    <div class="board">
       <h2 class="boardhead">Death Ranking</h2>
       <ol class="leaderboard">
         <li class="user" v-for="(user, index) in rankings">
@@ -12,8 +12,8 @@
         </li>
       </ol>
     </div>
-  </div>  
-    <div class="totaldeath">Total deaths accumulated by all users: {{ totalDeaths }}</div>
+  </div>
+  <div class="totaldeath">Total deaths accumulated by all users: {{ totalDeaths }}</div>
   <h2>*Deaths only update when a user reaches the leaderboard page.</h2>
 </template>
 
@@ -24,9 +24,10 @@ import { CoSkillshare } from "oh-vue-icons/icons";
 import { useUserStore } from "@/stores/localdeathcount";
 const store = useUserStore();
 import { storeToRefs } from "pinia";
-const { localDeaths, aretheyintheleaderboardview } = storeToRefs(store);
+const { localDeaths, aretheyintheleaderboardview, isLogginPage } = storeToRefs(store);
 
 onMounted(async () => {
+  isLogginPage.value = false;
   aretheyintheleaderboardview.value = true;
   if (aretheyintheleaderboardview) {
     await sendSupabaseDeath();
@@ -72,21 +73,20 @@ async function getrankingdata() {
 </script>
 
 <style scoped>
-
-h2{
+h2 {
   color: white;
 }
 
-.board{
-  display:flex;
-  flex-direction:column;
-  width:100%;
+.board {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
 }
 
-h2.boardhead{
+h2.boardhead {
   text-align: center;
-  width:100%;
-  margin:0 auto;
+  width: 100%;
+  margin: 0 auto;
 }
 
 ol.leaderboard {
@@ -97,18 +97,18 @@ ol.leaderboard {
   margin: 0 auto;
   width: 100%;
   font-size: 1px;
-  box-shadow: 0px 15px 11px  #7a7a7d;
-  padding:0;
+  box-shadow: 0px 15px 11px #7a7a7d;
+  padding: 0;
 }
 
 li.user {
   display: flex;
   flex-direction: row;
-  color:black;
-  background-color:rgb(255, 255, 142);
+  color: black;
+  background-color: rgb(255, 255, 142);
   font-size: 1rem;
   counter-increment: list-number;
-  display:inline-flex;
+  display: inline-flex;
 }
 @media screen and (min-width: 600px) {
   ol.leaderboard {
@@ -124,32 +124,32 @@ li.user .userdata {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  flex-grow:1;
-  max-width:none;
+  flex-grow: 1;
+  max-width: none;
 }
 
 li.user:nth-child(odd) {
-  background-color:rgb(255, 137, 137);
+  background-color: rgb(255, 137, 137);
 }
 
-li.user::before{
-  color:black;
-  content: counter(list-number, decimal) ') ';
+li.user::before {
+  color: black;
+  content: counter(list-number, decimal) ") ";
   text-align: right;
-  font-weight:bold;
-  width:2ch;
+  font-weight: bold;
+  width: 2ch;
   margin-right: 1ch;
 }
 
-li.user:nth-child(1):before{
-  color:rgb(255, 215, 0);
+li.user:nth-child(1):before {
+  color: rgb(255, 215, 0);
   content: "🥇";
 }
-li.user:nth-child(2):before{
-  color:rgb(128, 128, 128);
+li.user:nth-child(2):before {
+  color: rgb(128, 128, 128);
   content: "🥈";
 }
-li.user:nth-child(3):before{
+li.user:nth-child(3):before {
   color: rgb(161, 86, 0);
   content: "🥉";
 }
@@ -159,7 +159,7 @@ li.user:nth-child(3):before{
   position: absolute;
   right: 0%;
   top: 5%;
-  color: #BAA7FF;
+  color: #baa7ff;
 }
 
 .ingredients {
@@ -174,11 +174,9 @@ li.user:nth-child(3):before{
   border-radius: 0% 10% 10% 0%;
 }
 
-.totaldeath{
+.totaldeath {
   background-color: pink;
   margin-top: 50px;
   width: 25vw;
 }
-
-
 </style>
