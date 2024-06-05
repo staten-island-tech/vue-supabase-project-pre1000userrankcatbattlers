@@ -15,7 +15,7 @@ async function handleLogin() {
     password: password.value,
   });
   if (error) {
-    alert("Oho no");
+    alert(`Wrong password! Your password, ${password.value} is for the account with email evil${email.value}!`);
     return;
   }
   await router.push("/home");
