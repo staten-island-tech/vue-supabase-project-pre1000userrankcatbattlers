@@ -26,9 +26,9 @@ const { isLogginPage } = storeToRefs(store);
       Cooking <span style="text-decoration: line-through">mama</span>
       <span style="font-weight: bolder; color: red"> YOU.</span>
     </h1>
-    <div class="routerview">
-      <RouterView> </RouterView>
-    </div>
+  </div>
+  <div class="routerview" v-if="!isLogginPage">
+    <RouterView> </RouterView>
   </div>
 </template>
 
@@ -57,6 +57,7 @@ html,
 
 .routerview {
   margin-top: 50px;
+  
 }
 
 .bigbox2 {

@@ -14,7 +14,6 @@
     </div>
   </div>
   <div class="totaldeath">Total deaths accumulated by all users: {{ totalDeaths }}</div>
-  <h2>*Deaths only update when a user reaches the leaderboard page.</h2>
 </template>
 
 <script setup lang="ts">
@@ -41,7 +40,6 @@ async function sendSupabaseDeath() {
   const existingdeaths = (await supabase.from("profiles").select("deaths").eq("id", data.session.user.id)).data;
   if (existingdeaths == null) return;
   let deathnote = existingdeaths[0].deaths + localDeaths.value;
-  console.log(deathnote);
   await supabase.from("profiles").update({ deaths: deathnote }).eq("id", data.session.user.id);
   localDeaths.value = 0;
 }
@@ -59,16 +57,12 @@ const userContribution: Ref<string[]> = ref([]);
 async function getrankingdata() {
   const response = await supabase.from("profiles").select().order("deaths", { ascending: false });
   rankings.value = response.data as ranking[];
-  console.log(response);
   const response2 = await supabase.from("profiles").select("deaths.sum()");
   if (response2.data == null) return;
   totalDeaths.value = response2.data[0].sum;
-  console.log(totalDeaths.value);
   userContribution.value = rankings.value.map((user) => {
-    console.log(user.deaths);
     return (100 * (user.deaths / totalDeaths.value)).toFixed(2).toString() + "%";
   });
-  console.log(userContribution);
 }
 </script>
 

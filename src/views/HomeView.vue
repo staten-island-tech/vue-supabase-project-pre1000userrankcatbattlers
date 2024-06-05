@@ -34,14 +34,11 @@ const ingredientsfiltered: Ref<Ingredient[]> = ref([]);
 const recipes: Ref<recipe[]> = ref([]);
 async function getingredients() {
   const response = await supabase.from("ingredients").select();
-  console.log(response);
   ingredients.value = response.data as Ingredient[];
   ingredientsfiltered.value = response.data as Ingredient[];
 
   const response2 = await supabase.from("recipes").select();
-  console.log(response2);
   recipes.value = response2.data as recipe[];
-  console.log(recipes);
 }
 
 onMounted(async () => {
@@ -54,23 +51,18 @@ onMounted(async () => {
   const response = (await supabase.from("profiles").select("isdead").eq("id", data.session.user.id)).data;
   if (!response || response.length === 0) return;
   dead.value = response[0].isdead;
-  console.log(dead.value);
-  repeat = true;
-  if (dead.value && repeat) await die();
+  if (dead.value) await die();
 });
-let repeat = true;
+
 
 const selectedIngredients: Ref<Ingredient[]> = ref([]);
 
 function add(ing: Ingredient) {
-  console.log(ing);
   if (selectedIngredients.value.length >= 4) return;
   selectedIngredients.value.push(ing);
-  console.log(selectedIngredients);
 }
 
 function remove(ing: Ingredient) {
-  console.log(ing);
   selectedIngredients.value.splice(selectedIngredients.value.indexOf(ing), 1);
 }
 
@@ -84,25 +76,28 @@ let suntzuquote = ref("");
 async function checkmymate_suntzu() {
   if (suntzuinput.value !== suntzuquote.value) return;
   dead.value = false;
+  health.value = 100;
   suntzuinput.value = "";
   const { data, error } = await supabase.auth.getSession();
   if (error || !data.session) return;
-  console.log(await supabase.from("profiles").update({ isdead: dead.value }).eq("id", data.session.user.id));
-  console.log(dead.value);
+  await supabase.from("profiles").update({ isdead: dead.value }).eq("id", data.session.user.id);
   alert("You can continue cooking.");
 }
 
 async function die() {
+  health.value = 0;
   dead.value = true;
-  repeat = false;
+  burn.value = burn.value*2;
+  if(timeout.value) {
+    clearTimeout(timeout.value);
+    timeout.value = null;
+  }
   confirm("You got cooked!");
-  console.log("OWWW");
   const { data, error } = await supabase.auth.getSession();
   if (error || !data.session) return;
-  console.log(await supabase.from("profiles").update({ isdead: dead.value }).eq("id", data.session.user.id));
+  await supabase.from("profiles").update({ isdead: dead.value }).eq("id", data.session.user.id);
   suntzuquote.value = suntzuquotes[Math.floor(Math.random() * suntzuquotes.length)];
   localDeaths.value++;
-  console.log(localDeaths);
 }
 
 const timeout: Ref<NodeJS.Timeout | null> = ref(null);
@@ -112,7 +107,6 @@ async function DoofenshmirtzEvilIncorporated() {
     .map((ing) => ing.name)
     .sort()
     .join(";");
-  console.log(cooking);
   const cookingRecipes = recipes.value.map((ind: recipe) => {
     return [ind["ingredient 1"], ind["ingredient 2"], ind["ingredient 3"], ind["ingredient 4"]]
       .sort()
@@ -120,12 +114,14 @@ async function DoofenshmirtzEvilIncorporated() {
       .join(";");
   }); // cheese;cheese;egg;egg;
 
-  console.log(cookingRecipes);
   const index = cookingRecipes.indexOf(cooking);
   if (index === -1) {
     burn.value++;
     const burning = async () => {
-      if (health.value < 1) die();
+      if (health.value < 1 && !dead.value) {
+        die();
+        return;
+      } 
 
       health.value -= Math.ceil(Math.random() * burn.value);
       timeout.value = setTimeout(burning, 100);
@@ -145,13 +141,14 @@ async function DoofenshmirtzEvilIncorporated() {
 
   health.value -= Math.ceil(Math.random() * burn.value);
   if (burn.value > 0) burn.value--;
+  if (health.value < 1) await die()
 }
 
 function explode() {
   if (!dialog.value) return;
   dialog.value.close();
-  console.log("bye");
   selectedIngredients.value = [];
+  
 }
 const actualalltypewithoutdupes: Ref<string[]> = ref([]);
 //Getting types for filtering purposes
@@ -161,9 +158,7 @@ function getType() {
   const alltype = ingredients.value.map((ing: Ingredient) => {
     return ing.type;
   });
-  console.log(alltype);
   actualalltypewithoutdupes.value = Array.from(new Set(alltype));
-  console.log(actualalltypewithoutdupes);
 }
 
 //button filtering
@@ -189,7 +184,6 @@ async function sendSupabaseDeath() {
   const existingdeaths = (await supabase.from("profiles").select("deaths").eq("id", data.session.user.id)).data;
   if (existingdeaths == null) return;
   let deathnote = existingdeaths[0].deaths + localDeaths.value;
-  console.log(deathnote);
   await supabase.from("profiles").update({ deaths: deathnote }).eq("id", data.session.user.id);
   localDeaths.value = 0;
 }
@@ -221,6 +215,7 @@ async function leaderboard() {
 <template>
   <main>
     <div class="dialogue" v-if="dead">
+
       <h2 v-if="suntzuquote" class="suntzuquote">{{ suntzuquote }}</h2>
       <label>
         type the Sun Tzu:
@@ -241,7 +236,7 @@ async function leaderboard() {
       </dialog>
       <h2>
         ❤ {{ health < 1 ? 0 : health }}
-        <span style="font-size: small">/100</span>
+        <span style="font-size: small">/100   </span>
         <span v-if="timeout"
           >YOU ARE BURNING!!! gasoline level: <span style="color: red; font-weight: bolder">{{ burn }}</span></span
         >
@@ -286,6 +281,10 @@ async function leaderboard() {
 
 h2{
   color:white;
+}
+
+dialog h2{
+  color: black;
 }
 
 .suntzuquote {

@@ -12,7 +12,6 @@
           <img class="dishimage" v-if="dish" :src="dish.image" :alt="dishname" />
           <h2>{{ dishname }}</h2>
         </div>
-
         <div class="page page2">
           <div v-for="ings in activelistofing" class="ingredient">
             <img class="ingredientpic" :src="ings.image" :alt="ings.name" />
@@ -20,13 +19,14 @@
           </div>
         </div>
       </div>
-
+      
       <button class="btn plus" @click="attempt(1)">
         <v-icon name="md-arrowcircleright-round" scale="4" />
       </button>
     </div>
   </div>
   <qte v-if="isAttempt" @win="win" @lose="lose" class="qte" />
+  <h2 class="Nvai2">page {{ recipenumber+1 }} out of {{recipes.length}} </h2>
 </template>
 
 <script setup lang="ts">
@@ -56,7 +56,6 @@ const ingredients: { [key: string]: Ingredient } = {};
 const recipes: Ref<recipe[]> = ref([]);
 async function getingredients() {
   const response = await supabase.from("ingredients").select();
-  console.log(response);
   response.data?.forEach((ingredient) => {
     ingredients[ingredient.name] = ingredient as Ingredient;
   });
@@ -74,21 +73,18 @@ onMounted(async () => {
 let dish: recipe | undefined;
 let dishname = "dish";
 let activelistofing: Ref<Ingredient[]> = ref([]);
-let recipenumber = 9;
+const recipenumber = ref(9);
 async function pageload() {
   activelistofing.value = [];
-  dish = recipes.value[recipenumber];
-  dishname = recipes.value[recipenumber]["Dish Name"];
+  dish = recipes.value[recipenumber.value];
+  dishname = recipes.value[recipenumber.value]["Dish Name"];
   const allingredients = recipes.value.map((ind: recipe) => {
     return [ind["ingredient 1"], ind["ingredient 2"], ind["ingredient 3"], ind["ingredient 4"]];
   });
-  console.log(allingredients[recipenumber]); //rice, egg, oil, salt
-  console.log(ingredients["rice"]); //object with name image and type of the ingredient
 
-  for (let i = 0; i < allingredients[recipenumber].length; i++) {
-    let key = allingredients[recipenumber][i];
+  for (let i = 0; i < allingredients[recipenumber.value].length; i++) {
+    let key = allingredients[recipenumber.value][i];
     if (!key) continue;
-    console.log(key);
     activelistofing.value.push(ingredients[key]);
   }
 }
@@ -112,14 +108,14 @@ function win() {
 async function lose() {
   isAttempt.value = false;
   alert("YOU FAILED");
-  recipenumber = Math.floor(Math.random() * recipes.value.length);
+  recipenumber.value = Math.floor(Math.random() * recipes.value.length);
   await pageload();
 }
 
 async function change(num: number) {
-  recipenumber += num;
-  if (recipenumber > recipes.value.length - 1) recipenumber = 0;
-  if (recipenumber < 0) recipenumber = recipes.value.length - 1;
+  recipenumber.value += num;
+  if (recipenumber.value > recipes.value.length - 1) recipenumber.value = 0;
+  if (recipenumber.value < 0) recipenumber.value = recipes.value.length - 1;
   await pageload();
 }
 </script>
@@ -127,6 +123,11 @@ async function change(num: number) {
 <style scoped>
 .Nvai {
   color: white;
+}
+
+.Nvai2 {
+  color: white;
+
 }
 
 body {

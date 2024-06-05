@@ -20,20 +20,16 @@ async function handleLogin() {
 async function handleSignup() {
   try {
     loading.value = true;
-    console.log(email.value); //TianlathanLangathan@gmail.com
-    console.log(password.value); //password
     const { data, error } = await supabase.auth.signUp({
       email: email.value,
       password: password.value,
     });
-    console.log(data); //{user: null, session: null}
-    console.log(await supabase.from("profiles").update({ username: username.value }).eq("id", data.user.id));
+    await supabase.from("profiles").update({ username: username.value }).eq("id", data.user.id)
 
     if (error) throw error;
   } catch (error) {
     if (error instanceof Error) {
       alert(error.message);
-      console.log(error);
     }
   } finally {
     loading.value = false;
