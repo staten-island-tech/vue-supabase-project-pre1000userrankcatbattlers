@@ -5,5 +5,6 @@ import { ref, type Ref } from "vue";
 export const useUserStore = defineStore("user", () => {
   const aretheyintheleaderboardview = ref(true);
   const localDeaths = ref(0);
-  return { localDeaths, aretheyintheleaderboardview };
+  const isLogginPage = ref(true);
+  return { localDeaths, aretheyintheleaderboardview, isLogginPage };
 });

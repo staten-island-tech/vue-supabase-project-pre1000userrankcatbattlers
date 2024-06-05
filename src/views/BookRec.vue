@@ -26,7 +26,7 @@
       </button>
     </div>
   </div>
-  <qte v-if="isAttempt" @win="win" @lose="lose" class="qte"/>
+  <qte v-if="isAttempt" @win="win" @lose="lose" class="qte" />
 </template>
 
 <script setup lang="ts">
@@ -35,7 +35,8 @@ import { ref, onMounted, type Ref } from "vue";
 import { useUserStore } from "@/stores/localdeathcount";
 const store = useUserStore();
 import { storeToRefs } from "pinia";
-const { aretheyintheleaderboardview } = storeToRefs(store);
+const { aretheyintheleaderboardview, isLogginPage } = storeToRefs(store);
+
 type Ingredient = {
   name: string;
   image: string;
@@ -64,6 +65,7 @@ async function getingredients() {
 }
 
 onMounted(async () => {
+  isLogginPage.value = false;
   aretheyintheleaderboardview.value = false;
   await getingredients();
   await pageload();
@@ -92,10 +94,10 @@ async function pageload() {
 }
 
 // @ts-ignore; ts stop being a hater‼
-import qte from "../components/qte.vue"
+import qte from "../components/qte.vue";
 const isAttempt = ref(false);
 const nav = ref(0);
-function attempt(num:number) {
+function attempt(num: number) {
   if (isAttempt.value) return;
   isAttempt.value = true;
   nav.value = num;
@@ -104,12 +106,12 @@ function attempt(num:number) {
 function win() {
   isAttempt.value = false;
   change(nav.value);
-  nav.value=0;
+  nav.value = 0;
 }
 
 async function lose() {
   isAttempt.value = false;
-  alert("YOU FAILED")
+  alert("YOU FAILED");
   recipenumber = Math.floor(Math.random() * recipes.value.length);
   await pageload();
 }
@@ -123,9 +125,8 @@ async function change(num: number) {
 </script>
 
 <style scoped>
-
-.Nvai{
-  color:white;
+.Nvai {
+  color: white;
 }
 
 body {
@@ -138,7 +139,7 @@ h1 {
   position: absolute;
   right: 0%;
   top: 5%;
-  color: #BAA7FF;
+  color: #baa7ff;
 }
 
 .bigger {
@@ -223,7 +224,7 @@ h1 {
   min-height: 70px;
   border: none;
   background-color: transparent;
-  color: #BAA7FF;
+  color: #baa7ff;
   transition: transform 10s ease-in;
   transform: scale(1);
 }
@@ -241,12 +242,12 @@ h1 {
 }
 
 .qte {
-  position:absolute;
-  width:100vw;
-  height:100vh;
-  display:flex;
-  align-items:center;
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
   justify-content: center;
-  z-index:9999;
+  z-index: 9999;
 }
 </style>

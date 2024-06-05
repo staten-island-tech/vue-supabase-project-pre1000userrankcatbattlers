@@ -13,7 +13,7 @@ const cooking2: Ref<recipe | null> = ref(null);
 import { useUserStore } from "@/stores/localdeathcount";
 const store = useUserStore();
 import { storeToRefs } from "pinia";
-const { localDeaths, aretheyintheleaderboardview } = storeToRefs(store);
+const { localDeaths, aretheyintheleaderboardview, isLogginPage } = storeToRefs(store);
 type Ingredient = {
   name: string;
   image: string;
@@ -45,6 +45,7 @@ async function getingredients() {
 }
 
 onMounted(async () => {
+  isLogginPage.value = false
   aretheyintheleaderboardview.value = false;
   await getingredients();
   getType();

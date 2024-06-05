@@ -5,7 +5,8 @@ import circleitem from "../components/circleitem.vue";
 import { useUserStore } from "@/stores/localdeathcount";
 const store = useUserStore();
 import { storeToRefs } from "pinia";
-const { aretheyintheleaderboardview } = storeToRefs(store);
+const { aretheyintheleaderboardview, isLogginPage } = storeToRefs(store);
+
 
 type Ingredient = {
   name: string;
@@ -56,6 +57,7 @@ async function getingredients() {
 }
 
 onMounted(async () => {
+  isLogginPage.value = false
   aretheyintheleaderboardview.value = false;
   await getingredients();
 });
