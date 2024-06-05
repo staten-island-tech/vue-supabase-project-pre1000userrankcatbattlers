@@ -14,6 +14,10 @@ async function handleLogin() {
     email: email.value,
     password: password.value,
   });
+  if (error) {
+    alert("Oho no");
+    return;
+  }
   await router.push("/home");
 }
 
@@ -24,9 +28,10 @@ async function handleSignup() {
       email: email.value,
       password: password.value,
     });
-    await supabase.from("profiles").update({ username: username.value }).eq("id", data.user.id)
+    await supabase.from("profiles").update({ username: username.value }).eq("id", data.user.id);
 
     if (error) throw error;
+    await router.push("/home");
   } catch (error) {
     if (error instanceof Error) {
       alert(error.message);
@@ -34,7 +39,6 @@ async function handleSignup() {
   } finally {
     loading.value = false;
   }
-  await router.push("/home");
 }
 
 let loginpage = ref(true);
