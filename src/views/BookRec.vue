@@ -1,12 +1,12 @@
 <template>
   <RouterLink to="/home" class="x"><v-icon name="bi-x-square-fill" scale="4"></v-icon></RouterLink>
   <h2 class="Nvai">** Warning! Skill Based Navigation **</h2>
+
   <div class="bigger">
     <div class="big">
       <button class="btn minus" @click="attempt(-1)">
         <v-icon name="md-arrowcircleleft-round" scale="4" />
       </button>
-
       <div class="book">
         <div class="page page1">
           <img class="dishimage" v-if="dish" :src="dish.image" :alt="dishname" />
@@ -27,6 +27,7 @@
   </div>
   <qte v-if="isAttempt" @win="win" @lose="lose" class="qte" />
   <h2 class="Nvai2">page {{ recipenumber + 1 }} out of {{ recipes.length }}</h2>
+  <h2 class="streak" v-if="streak">Current Navigation Streak: {{ streak }}</h2>
 </template>
 
 <script setup lang="ts">
@@ -73,7 +74,7 @@ onMounted(async () => {
 let dish: recipe | undefined;
 let dishname = "dish";
 let activelistofing: Ref<Ingredient[]> = ref([]);
-const recipenumber = ref(9);
+const recipenumber = ref(0);
 async function pageload() {
   activelistofing.value = [];
   dish = recipes.value[recipenumber.value];
@@ -99,16 +100,19 @@ function attempt(num: number) {
   nav.value = num;
 }
 
+const streak = ref(0)
+
 function win() {
   isAttempt.value = false;
   change(nav.value);
   nav.value = 0;
+  streak.value++;
 }
 
 async function lose() {
   isAttempt.value = false;
-  alert("YOU FAILED");
   recipenumber.value = Math.floor(Math.random() * recipes.value.length);
+  streak.value = 0;
   await pageload();
 }
 
@@ -244,11 +248,21 @@ h1 {
 
 .qte {
   position: absolute;
+  left:0;
+  top:0;
   width: 100vw;
   height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 9999;
+  overflow:hidden;
+}
+
+.streak {
+  position:absolute;
+  color:white;
+  text-align:center;
+  bottom:0;
 }
 </style>
