@@ -95,10 +95,10 @@ async function insertRecipe() {
   //get the user input after the check function
   await supabase.from("recipes").insert({
     "Dish Name": userdishname,
-    "ingredient 1": selectedoption1,
-    "ingredient 2": selectedoption2,
-    "ingredient 3": selectedoption3,
-    "ingredient 4": selectedoption4,
+    "ingredient 1": selectedoption1 ? selectedoption1 : null,
+    "ingredient 2": selectedoption2 ? selectedoption2 : null,
+    "ingredient 3": selectedoption3 ? selectedoption3 : null,
+    "ingredient 4": selectedoption4 ? selectedoption4 : null,
     image: userdishimage,
   });
 }

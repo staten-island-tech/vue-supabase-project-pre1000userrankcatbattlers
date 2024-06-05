@@ -35,7 +35,7 @@ function stop() {
   clearInterval(timer);
   timer = undefined;
   const off = Math.abs(progress.value-target.value);
-  emit(off <= 2 ? 'win' : 'lose')
+  emit(off <= 2.5 ? 'win' : 'lose')
 }
 </script>
 
