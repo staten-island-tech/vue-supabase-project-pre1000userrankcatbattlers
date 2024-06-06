@@ -65,7 +65,8 @@ function movetologin() {
           <input class="inputField" required type="username" placeholder="Username" v-model="username" v-if="!loginpage" />
         </div>
         <div>
-          <input class="inputField" required type="password" placeholder="Password Must be 6 or more characters" v-model="password" />
+          <input class="inputField" id="passwordcss" required type="password" placeholder="Password" v-model="password" />
+          <h3 v-if="!loginpage">Must be 6 characters or more.</h3>
         </div>
         <div>
           <input type="submit" class="button block log" @click="handleSignup" :value="loading ? 'Loading' : 'Sign Up'" :disabled="loading" v-if="!loginpage" />
